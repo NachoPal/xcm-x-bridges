@@ -9,6 +9,14 @@ mkdir resources || true
 rm -rf data/*
 rm -rf resources/*
 rm -rf logs/*
+rm -rf bin/src/*
+
+yarn
+
+if $DEVELOPEMENT != true
+then
+  yarn build
+fi  
 
 . ./scripts/build/polkadot-node.sh
 . ./scripts/build/substrate-relay.sh

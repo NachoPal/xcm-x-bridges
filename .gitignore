@@ -1,0 +1,7 @@
+.cargo
+bin
+data
+logs
+temp
+resources
+node_modules

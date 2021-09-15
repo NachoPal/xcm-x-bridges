@@ -1,0 +1,17 @@
+{
+  "name": "rococo-wococo-bridged-parachains",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Ignacio Palacios",
+  "license": "MIT",
+  "scripts": {
+    "reserve-parachain": "node ./src/reserve-parachain.js",
+    "register-parachain": "node ./src/register-parachain.js"
+  },
+  "dependencies": {
+    "@polkadot/api": "^5.8.3",
+    "@polkadot/ui-keyring": "^0.85.3",
+    "@polkadot/util-crypto": "^7.3.1",
+    "command-line-args": "^5.2.0"
+  }
+}

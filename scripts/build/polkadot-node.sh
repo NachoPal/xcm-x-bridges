@@ -1,5 +1,5 @@
 #!/bin/bash
-. ./scripts/prelude.sh
+. ./config.sh
 
 if [ -z "$SKIP_POLKADOT_BUILD" ]; then
 

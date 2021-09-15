@@ -16,3 +16,5 @@ SKIP_WASM_BUILD=1
 # following two variables must be changed at once: either to ("", "debug") or to ("--release", "release")
 BUILD_TYPE=--release
 BUILD_FOLDER=release
+
+DEVELOPEMENT=false

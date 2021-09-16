@@ -3,7 +3,7 @@
 
 dev=""
 
-if $DEVELOPEMENT == true
+if $DEVELOPMENT
 then
   dev="dev:"
 fi  

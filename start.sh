@@ -13,7 +13,7 @@ rm -rf bin/src/*
 
 yarn
 
-if $DEVELOPEMENT != true
+if ! $DEVELOPMENT
 then
   yarn build
 fi  

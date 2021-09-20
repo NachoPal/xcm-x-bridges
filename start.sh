@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./stop.sh
+
 . ./config.sh
 
 mkdir bin || true

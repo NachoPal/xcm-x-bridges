@@ -14,8 +14,8 @@ echo "Wococo Parachain start up"
   --force-authoring\
   --parachain-id 2000\
   --base-path=data/wococo-parachain.db\
-  --port 40334\
-  --ws-port 8845\
+  --port 40336\
+  --ws-port 8847\
   --\
   --execution wasm\
   --chain=resources/chain-spec-wococo-local-raw.json\

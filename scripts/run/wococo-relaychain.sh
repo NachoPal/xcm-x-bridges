@@ -19,7 +19,7 @@ export RUST_LOG
 	--base-path=data/wococo-alice.db\
   --bootnodes=/ip4/127.0.0.1/tcp/30336/p2p/12D3KooWHTYUAtF6ry4mrYTufzLfDSJ725mYc85rSKFzuFkXEvFT\
 	--node-key=79cf382988364291a7968ae7825c01f68c50d679796a8983237d07fe0ccf363c\
-	--port=30335\
+	--port=30338\
 	--prometheus-port=9617\
 	--rpc-port=9935\
 	--ws-port=9946\
@@ -35,7 +35,7 @@ export RUST_LOG
 	--base-path=data/wococo-bob.db\
 	--bootnodes=/ip4/127.0.0.1/tcp/30335/p2p/12D3KooWKWnNktXrugMMYa4NFB18qxwF49rABJgHiLGJq7uVfs5E\
 	--node-key=79cf382988364291a7968ae7825c01f68c50d679796a8983237d07fe0ccf363d\
-	--port=30336\
+	--port=30339\
 	--prometheus-port=9618\
 	--rpc-port=9936\
 	--ws-port=9947\

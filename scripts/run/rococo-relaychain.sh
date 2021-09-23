@@ -12,26 +12,9 @@ echo "Rococo Relaychain start up"
 RUST_LOG=xcm::send_xcm=trace
 export RUST_LOG
 
-# # start Rococo nodes
-# ./bin/polkadot\
-#   -lerror\
-# 	--chain=rococo-local\
-# 	--alice\
-# 	--base-path=data/rococo-alice.db\
-#   --bootnodes=/ip4/127.0.0.1/tcp/30334/p2p/12D3KooWSEpHJj29HEzgPFcRYVc5X3sEuP3KgiUoqJNCet51NiMX\
-# 	--node-key=79cf382988364291a7968ae7825c01f68c50d679796a8983237d07fe0ccf363b\
-# 	--port=30333\
-# 	--prometheus-port=9615\
-# 	--rpc-port=9933\
-# 	--ws-port=9944\
-# 	--execution=wasm\
-#   --no-mdns\
-# 	--rpc-cors=all\
-# 	--unsafe-rpc-external\
-# 	--unsafe-ws-external &> ./logs/rococo-alice.log&
-
 # start Rococo nodes
 ./bin/polkadot\
+  -lerror\
 	--chain=rococo-local\
 	--alice\
 	--base-path=data/rococo-alice.db\
@@ -40,13 +23,14 @@ export RUST_LOG
 	--prometheus-port=9615\
 	--rpc-port=9933\
 	--ws-port=9944\
-	--execution=wasm\
+	--execution Native\
   --no-mdns\
 	--rpc-cors=all\
 	--unsafe-rpc-external\
 	--unsafe-ws-external &> ./logs/rococo-alice.log&
 
 ./bin/polkadot\
+  -lerror\
 	--chain=rococo-local\
 	--bob\
 	--base-path=data/rococo-bob.db\
@@ -57,7 +41,7 @@ export RUST_LOG
 	--prometheus-port=9616\
 	--rpc-port=9934\
 	--ws-port=9945\
-	--execution=wasm\
+	--execution Native\
   --no-mdns\
 	--rpc-cors=all\
 	--unsafe-rpc-external\

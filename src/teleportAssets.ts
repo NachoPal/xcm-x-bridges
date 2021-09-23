@@ -9,17 +9,17 @@ const teleportAsset = async (api, uri) => {
   let destination = { x1: { parachain: 2000 }}
 
   let beneficiary = {
-    x1: { accountId32: { network: { any: true, id: wallet.address }}}
+    x1: { accountId32: { network: { any: true }, id: wallet.address }}
   }
 
-  let assets = [{ concreteFungible: { here: true, amount: "1000000000000" }}]
+  let assets = [{ concreteFungible: { here: true, amount: "1000000000000000" }}]
 
   await api.tx.xcmPallet
 			.teleportAssets(
         destination, beneficiary, assets, "10000000000" 
       )
 			.signAndSend(wallet, { nonce, era: 0 }); 
-      
+
   console.log("Sent")    
 }
 

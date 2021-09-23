@@ -8,8 +8,11 @@ echo "Wococo Parachain start up"
 ./bin/polkadot-collator export-genesis-state --parachain-id 2000 > ./resources/parachains/wococo-2000-genesis
 ./bin/polkadot-collator export-genesis-wasm > ./resources/parachains/wococo-2000-wasm
 
+RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor=debug,xcm:pallet-xcm=debug,xcm:currency_adapter=debug
+
 # Collator 1
 ./bin/polkadot-collator\
+  -lerror\
   --alice\
   --collator\
   --force-authoring\
@@ -21,8 +24,10 @@ echo "Wococo Parachain start up"
   --reserved-nodes /ip4/127.0.0.1/tcp/40336/p2p/12D3KooWNp1WdJUrxxFEY6h14V966UYWQqrHgXP1MzTwUovAAao3 \
   /ip4/127.0.0.1/tcp/30339/p2p/12D3KooWHwYX1uaahRooGfz7DCbRTRTDJq4yCZHrAF68qvipeVRP\
   --reserved-only\
+  --execution Native\
   --\
-  --execution wasm\
+  -lerror\
+  --execution Native\
   --node-key-file=resources/node-keys/wococo-node-1\
   --chain=resources/chain-specs/wococo-local-raw.json\
   --bootnodes=/ip4/127.0.0.1/tcp/30337/p2p/12D3KooWCNRrHY8vJgnh6trkWw9nGFM2h4MJvzSqCRisxDXkdX3E\
@@ -32,6 +37,7 @@ echo "Wococo Parachain start up"
 
 # Collator 2
 ./bin/polkadot-collator\
+  -lerror\
   --bob\
   --collator\
   --force-authoring\
@@ -43,8 +49,10 @@ echo "Wococo Parachain start up"
   --reserved-nodes /ip4/127.0.0.1/tcp/40335/p2p/12D3KooWQfrbAh4WzWKQdEJQKBLyXbXS9E6gaYtopnzqmaLUjbbZ \
   /ip4/127.0.0.1/tcp/30340/p2p/12D3KooWJH3LSLjLoAzszuPPmJBjwB2VcSC5NZtYurW8ZddfCgrg\
   --reserved-only\
+  --execution Native\
   --\
-  --execution wasm\
+  -lerror\
+  --execution Native\
   --chain=resources/chain-specs/wococo-local-raw.json\
   --node-key-file=resources/node-keys/wococo-node-2\
   --bootnodes=/ip4/127.0.0.1/tcp/30337/p2p/12D3KooWCNRrHY8vJgnh6trkWw9nGFM2h4MJvzSqCRisxDXkdX3E\

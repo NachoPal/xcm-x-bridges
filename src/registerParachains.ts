@@ -4,8 +4,8 @@ import connectToRelayChains from './common/connectToRelayChains';
 import getWallet from './common/getWallet';
 
 const getGenesisAndWasm = (genesisFile: string, wasmFile: string) => {
-  const genesis = fs.readFileSync(process.cwd() + "/resources/" + genesisFile).toString();
-  const wasm = fs.readFileSync(process.cwd() + "/resources/" + wasmFile).toString();
+  const genesis = fs.readFileSync(process.cwd() + "/resources/parachains/" + genesisFile).toString();
+  const wasm = fs.readFileSync(process.cwd() + "/resources/parachains/" + wasmFile).toString();
 
   return { genesis, wasm }
 }

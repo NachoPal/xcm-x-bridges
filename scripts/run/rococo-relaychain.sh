@@ -5,8 +5,8 @@
 ###############################################################################
 echo "Rococo Relaychain start up"
 
-./bin/polkadot build-spec --disable-default-bootnode --chain rococo-local > ./resources/chain-spec-rococo-local.json
-./bin/polkadot build-spec --chain ./resources/chain-spec-rococo-local.json --raw --disable-default-bootnode > ./resources/chain-spec-rococo-local-raw.json
+./bin/polkadot build-spec --disable-default-bootnode --chain rococo-local > ./resources/chain-specs/rococo-local.json
+./bin/polkadot build-spec --chain ./resources/chain-specs/rococo-local.json --raw --disable-default-bootnode > ./resources/chain-specs/rococo-local-raw.json
 
 # RUST_LOG=runtime=trace,runtime::bridge=trace,runtime::bridge-messages=trace
 RUST_LOG=xcm::send_xcm=trace
@@ -18,29 +18,30 @@ export RUST_LOG
 	--chain=rococo-local\
 	--alice\
 	--base-path=data/rococo-alice.db\
-  --bootnodes=/ip4/127.0.0.1/tcp/30334/p2p/12D3KooWSEpHJj29HEzgPFcRYVc5X3sEuP3KgiUoqJNCet51NiMX\
-	--node-key=79cf382988364291a7968ae7825c01f68c50d679796a8983237d07fe0ccf363b\
+  --node-key-file=resources/node-keys/rococo-alice\
 	--port=30333\
 	--prometheus-port=9615\
 	--rpc-port=9933\
 	--ws-port=9944\
-	--execution=Native\
+	--execution Native\
   --no-mdns\
 	--rpc-cors=all\
 	--unsafe-rpc-external\
 	--unsafe-ws-external &> ./logs/rococo-alice.log&
 
 ./bin/polkadot\
+  -lerror\
 	--chain=rococo-local\
 	--bob\
 	--base-path=data/rococo-bob.db\
-	--bootnodes=/ip4/127.0.0.1/tcp/30333/p2p/12D3KooWMF6JvV319a7kJn5pqkKbhR3fcM2cvK5vCbYZHeQhYzFE\
+  --node-key-file=resources/node-keys/rococo-bob\
+	--bootnodes=/ip4/127.0.0.1/tcp/30333/p2p/12D3KooWDso5DmDHFrGnFWXVWNWd7spQp6mw1CgDp4MKcacEk1QP\
 	--node-key=4f9d0146dd9b7b3bf5a8089e3880023d1df92057f89e96e07bb4d8c2ead75bbd\
 	--port=30334\
 	--prometheus-port=9616\
 	--rpc-port=9934\
 	--ws-port=9945\
-	--execution=Native\
+	--execution Native\
   --no-mdns\
 	--rpc-cors=all\
 	--unsafe-rpc-external\

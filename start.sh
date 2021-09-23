@@ -1,13 +1,17 @@
 #!/bin/bash
 
+./stop.sh
+
 . ./config.sh
 
 mkdir bin || true
 mkdir data || true
 mkdir logs || true
-mkdir resources || true
+mkdir resources/parachains || true
+mkdir resources/chain-specs || true
 rm -rf data/*
-rm -rf resources/*
+rm -rf resources/parachains/*
+rm -rf resources/chain-specs/*
 rm -rf logs/*
 rm -rf bin/src/*
 

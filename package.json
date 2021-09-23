@@ -8,14 +8,17 @@
     "build": "tsc",
     "start": "node ./bin/index.js",
     "dev:register-parachains": "ts-node ./src/registerParachains.ts",
-    "register-parachains": "node ./bin/src/registerParachains.js"
+    "register-parachains": "node ./bin/src/registerParachains.js",
+    "dev:teleport-assets": "ts-node ./src/teleportAssets.ts",
+    "teleport-assets": "node ./bin/src/teleportAssets.js"
   },
   "dependencies": {
     "@polkadot/api": "^5.8.3",
+    "@polkadot/types": "^5.9.1",
     "@polkadot/ui-keyring": "^0.85.3",
     "@polkadot/util-crypto": "^7.3.1",
-    "command-line-args": "^5.2.0",
     "@types/node": "^16.7.10",
+    "command-line-args": "^5.2.0",
     "typescript": "^4.4.2"
   },
   "devDependencies": {

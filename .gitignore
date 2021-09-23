@@ -3,5 +3,6 @@ bin
 data
 logs
 temp
-resources
+resources/parachains
+resources/chain-specs
 node_modules

@@ -1,83 +1,130 @@
-// import { compactAddLength } from '@polkadot/util';
-// import { getSubstrateDynamicNames } from './common/getSubstrateDynamicNames';
-// import connectToRelayChains from './common/connectToRelayChains';
+import commandLineArgs from 'command-line-args';
+import connectToRelayChains from './common/connectToRelayChains';
+import { TeleportData } from './interfaces/xcmData';
+import { teleportAsset } from './teleportAssets';
 
-// const main = async () => {
+const subCommands = async (isLocal, targetCommands, relayChains) => {
+  let argv = targetCommands._unknown || []
 
-//   const relayChains = connectToRelayChains()
+  let subDefinitions = [
+    { name: 'xcm', defaultOption: true }
+  ]
 
-//   // console.log(account)
+  const subCommand = commandLineArgs(subDefinitions, { argv, stopAtFirstUnknown: true })
 
-//   const {
-//     sourceChainDetails: {
-//       apiConnection: { api: sourceApi },
-//       chain: sourceChain 
-//     },
-//     targetChainDetails: {
-//       apiConnection: { api: targetApi },
-//       chain: targetChain
-//     }
-//   } = connections;
+  if (subCommand.xcm === 'teleport-asset') {
+    let argv = subCommand._unknown || []
 
-//   const transferAmount = "1000000000000000";
-//   const estimatedFee = "10000000000000"
+    let optionDefinitions = [
+      { name: 'origin', alias: 'o', type: String },
+      { name: 'beneficiary', alias: 'b', type: String },
+      { name: 'amount', alias: 'a', type: String },
+      { name: 'destWeight', alias: 'w', type: String },
+      { name: 'parachain', alias: 'p', type: Number }
+    ]
+    const optionsCommand = commandLineArgs(optionDefinitions, { argv, stopAtFirstUnknown: true });
 
-//   // // // const secretSeed = '0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a'; //Alice
-//   // // // const account = await generateKeyPair(secretSeed);
-//   const receiverAddress = "5CiPPseXPECbkjWCa6MnjNokrgYjMqmKndv2rSnekmSK2DjL"
+    const validOptions = (
+      optionsCommand.origin &&
+      optionsCommand.beneficiary &&
+      optionsCommand.amount &&
+      optionsCommand.destWeight &&
+      optionsCommand.parachain
+    );
+
+    if (!validOptions) {
+      console.log(`Error: -o, -b, -a, -w and -p flags are mandatory for "${subCommand.xcm}"`);
+      process.exit(1);
+    }
+
+    const { origin, beneficiary, parachain, amount, destWeight } = optionsCommand;
+
+    let data: TeleportData = {
+      signer: targetCommands?.signer,
+      fee: targetCommands?.fee,
+      lane: targetCommands?.lane,
+      origin,
+      beneficiary,
+      parachain,
+      amount,
+      destWeight
+    }
+    await teleportAsset(relayChains, data, isLocal)
+
+  } else {
+    console.log('Error: Invalid XCM. Only "teleport-asset" is valid');
+    process.exit(1);
+  }
+}
+
+const main = async () => {
+  const relayChains = await connectToRelayChains(9944, 9948);
+
+  let mainDefinitions = [
+    { name: 'target', defaultOption: true },
+  ]
+  const mainCommand = commandLineArgs(mainDefinitions, { stopAtFirstUnknown: true })
+  let argv = mainCommand._unknown || []
+
+  let isLocal = mainCommand.target === 'local' ? true : false; 
+
+  if (mainCommand.target === 'local') {
+    await subCommands(isLocal, mainCommand, relayChains)
+
+  } else if (mainCommand.target === 'remote') {
+    let targetDefinitions = [
+      { name: 'signer', alias: 's', type: String },
+      { name: 'fee', alias: 'f', type: String },
+      { name: 'lane', alias: 'l', type: String }
+    ]
+
+    const targetCommand = commandLineArgs(targetDefinitions, { argv, stopAtFirstUnknown: true })
+
+    const validTarget = (
+      targetCommand.signer && targetCommand.fee && targetCommand.lane
+    )
+
+    if (!validTarget) {
+      console.log(`Error: -s, -f and -l flags are mandatory for "${mainCommand.target}" target`);
+      process.exit(1);
+    }
+
+    await subCommands(isLocal, targetCommand, relayChains)
+  } else {
+    console.log('Error: Invalid target, only "local" or "remote" are valid');
+    process.exit(1);
+  }
+}
+
+main()
+
+// ============================================================================================
+// ============================ TELEPOT ASSET - LOCAL =========================================
+// ============================================================================================
+
+// yarn dev local teleport-asset -o //Alice -b //Bob -p 2000 -a 1000000000000000 -w 100000000000
+
+// ============================================================================================
+// ======================== TELEPOT ASSET - REMOTE - Source Origin ============================
+// ============================================================================================
+
+// # THE XCM IS EXECUTED BY THE COMPANION ACCOUNT IN THE TARGET RELAY CHAIN
+// # If the Companion Target Account has no balance the Remote TELEPOR ASSETS will fail
+// # TODO: 'origin.sourceAccount' can be changed in the Message Payload, so we could try to use the same account that the Source Chain
+
+// yarn dev remote -s //Alice -f 10000000000000 -l 0x00000000 teleport-asset -o //Alice -b //Bob -p 2000 -a 1000000000000000 -w 100000000000
+
+// ============================================================================================
+// ======================== TELEPOT ASSET - REMOTE - Target Origin ============================
+// ============================================================================================
 
 
-//   let weight: number = 0;
-//   let call: Uint8Array | null = null;
-//   const laneId = '0x00000000';
-
-//   // let callHex: string = '0x6302000102001cbd2d43530a44705ad088af313e18f80b53ef16b36177cd4b77b846f2a5f07c040a00070010a5d4e80000000000000000';
-
-//   console.log(await targetApi.tx.balances.transfer(receiverAddress, transferAmount));
-
-//   call = (await targetApi.tx.balances.transfer(receiverAddress, transferAmount)).toU8a();
-//   call = call.slice(2);
-
-//   weight = (
-//     await targetApi.tx.balances.transfer(receiverAddress, 100).paymentInfo(account)
-//   ).weight.toNumber();
-
-//   // console.log((await targetApi.tx.balances.transfer(keyringPair[1].address, 10000)))
-//   //   // console.log(new BN(transferAmount))
-//   //   // console.log(await targetApi.tx.balances.transfer(receiverAddress, new BN(transferAmount) || 0))
-
-//   const payload = {
-//     call: compactAddLength(call!),
-//     origin: {
-//       SourceAccount: account!.addressRaw
-//     },
-//     spec_version: targetApi.consts.system.version.specVersion.toNumber(),
-//     weight
-//   };
-
-//   // // console.log(payload.spec_version)
-
-//   let nonce = await sourceApi.rpc.system.accountNextIndex(account.address);
-
-//   const { bridgedMessages } = getSubstrateDynamicNames(targetChain);
-  
-//   const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(laneId, payload, estimatedFee);
-
-//   // console.log(bridgeMessage)
+// ============================================================================================
+// =========================== TRANSACT - LOCAL ===============================================
+// ============================================================================================
 
 
-//   // await bridgeMessage.signAndSend(account, { nonce });
-
-//   // console.log(nonce)
-
-//   // await connection.api.tx.balances.transfer("5s6GPQePgaQj86uGnZHUeoTWQh7aEcJvmgGA8sd3aUBpedbt", 1000).signAndSend(organisationWallet, {nonce})
-//   // await sourceApi.tx.balances.transfer("5s6GPQePgaQj86uGnZHUeoTWQh7aEcJvmgGA8sd3aUBpedbt", 1000).signAndSend(account, { nonce })
-
-//   process.exit(0)
-
-// }
-
-// main()
-
-
+// ============================================================================================
+// =========================== TRANSACT - REMOTE ==============================================
+// ============================================================================================
 

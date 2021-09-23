@@ -1,68 +1,52 @@
-import commandLineArgs from 'command-line-args';
-import connectToRelayChains from './common/connectToRelayChains';
+// import commandLineArgs from 'command-line-args';
+// import connectToRelayChains from './common/connectToRelayChains';
+import { getApisFromRelays } from './common/getApisFromRelays';
 import getWallet from './common/getWallet';
+import { sendMessage } from './common/sendMessage';
+import { MessageData, TeleportData } from './interfaces/xcmData';
 
-const teleportAsset = async (api, uri) => {
-  const wallet = await getWallet(uri);
-  let nonce = await api.rpc.system.accountNextIndex(wallet.address);
+export const teleportAsset = async (relayChains, data: TeleportData, isLocal) => {
+  const { 
+    signer,
+    lane,
+    fee,
+    origin,
+    beneficiary,
+    amount,
+    parachain,
+    destWeight
+  } = data;
 
-  let destination = { x1: { parachain: 2000 }}
+  const { sourceApi, targetApi } = getApisFromRelays(relayChains);
 
-  let beneficiary = {
-    x1: { accountId32: { network: { any: true }, id: wallet.address }}
+  let api = isLocal ? sourceApi : targetApi;
+
+  const signerAccount = await getWallet(signer || origin);
+  const beneficiaryAccount = await getWallet(beneficiary);
+
+  let destination = { x1: { parachain }}
+  let beneficiaryObj = {
+    x1: { accountId32: { network: { any: true }, id: beneficiaryAccount.address }}
   }
+  let assets = [{ concreteFungible: { here: true, amount }}]
 
-  let assets = [{ concreteFungible: { here: true, amount: "1000000000000000" }}]
+  let call = api.tx.xcmPallet.teleportAssets(destination, beneficiaryObj, assets, destWeight)
+  let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
 
-  await api.tx.xcmPallet
-			.teleportAssets(
-        destination, beneficiary, assets, "10000000000" 
-      )
-			.signAndSend(wallet, { nonce, era: 0 }); 
+  if (isLocal) {
+    await (await call).signAndSend(signerAccount, { nonce, era: 0 });
+  } else {
+    let message: MessageData = {
+      signer: signerAccount,
+      relayChains,
+      fee,
+      lane,
+      call,
+      nonce
+    }
+    await sendMessage(message)
+  }  
 
-  console.log("Sent")    
-}
-
-
-
-const main = async () => {
-  const optionDefinitions = [
-    { name: 'port', alias: 'p', type: String, multiple: true },
-    { name: 'uri', alias: 'u', type: String, multiple: true },
-    // { name: 'genesis', alias: 'g', type: String, multiple: true },
-    // { name: 'wasm', alias: 'w', type: String, multiple: true },
-    // { name: 'id', alias: 'i', type: Number, multiple: true }
-  ]
-  const options = commandLineArgs(optionDefinitions);
-  const { port, uri } = options;
-
-
-  const relayChains = await connectToRelayChains(port[0], port[1]);
-
-
-  // console.log("[erra")
-
-  // console.log(relayChains.source.chain.api.runtimeMetadata.asV13.modules[45].calls.value[0].args[0].toHuman())
-  // console.log(relayChains.source.chain.api.runtimeMetadata.asV13.toHuman())
-  // const relayChainsArray = [
-  //   { // source
-  //     api: relayChains.source.chain.api,
-  //     uri: uri[0],
-  //     genesis: genesis[0],
-  //     wasm: wasm[0],
-  //     id: id[0]
-  //   },
-  //   { // target
-  //     api: relayChains.target.chain.api,
-  //     uri: uri[1],
-  //     genesis: genesis[1],
-  //     wasm: wasm[1],
-  //     id: id[1]
-  //   },
-  // ]
-
-  await teleportAsset(relayChains.source.chain.api, uri[0]);
+  console.log("Assets Teleported")
   process.exit(0)
 }
-
-main()

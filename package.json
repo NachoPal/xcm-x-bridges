@@ -7,10 +7,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./bin/index.js",
+    "dev": "ts-node ./src/index.ts",
     "dev:register-parachains": "ts-node ./src/registerParachains.ts",
-    "register-parachains": "node ./bin/src/registerParachains.js",
-    "dev:teleport-assets": "ts-node ./src/teleportAssets.ts",
-    "teleport-assets": "node ./bin/src/teleportAssets.js"
+    "register-parachains": "node ./bin/src/registerParachains.js"
   },
   "dependencies": {
     "@polkadot/api": "^5.8.3",

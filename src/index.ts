@@ -1,7 +1,8 @@
 import commandLineArgs from 'command-line-args';
 import connectToRelayChains from './common/connectToRelayChains';
-import { TeleportData } from './interfaces/xcmData';
+import { TeleportData, TransactData, Xcm, BridgeData } from './interfaces/xcmData';
 import { teleportAsset } from './teleportAssets';
+import { sendXcm } from './sendXcm';
 
 const subCommands = async (isLocal, targetCommands, relayChains) => {
   let argv = targetCommands._unknown || []
@@ -12,7 +13,15 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 
   const subCommand = commandLineArgs(subDefinitions, { argv, stopAtFirstUnknown: true })
 
+  let bridgeData: BridgeData = {
+    relayChains,
+    signer: targetCommands?.signer,
+    fee: targetCommands?.fee,
+    lane: targetCommands?.lane,
+  }
+
   if (subCommand.xcm === 'teleport-asset') {
+    let type: "TeleportAsset" = "TeleportAsset";
     let argv = subCommand._unknown || []
 
     let optionDefinitions = [
@@ -39,20 +48,78 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 
     const { origin, beneficiary, parachain, amount, destWeight } = optionsCommand;
 
-    let data: TeleportData = {
-      signer: targetCommands?.signer,
-      fee: targetCommands?.fee,
-      lane: targetCommands?.lane,
+    let xcmMessage: TeleportData = {
+      type,
       origin,
       beneficiary,
-      parachain,
       amount,
       destWeight
     }
-    await teleportAsset(relayChains, data, isLocal)
+
+    let xcm: Xcm = {
+      destination: { x1: { parachain }},
+      message: xcmMessage,
+      bridgeData,
+    }
+
+    await teleportAsset(xcm, isLocal)
+
+  } else if (subCommand.xcm === 'transact') {
+    let type: "Transact" = "Transact";
+
+    let optionDefinitions = [
+      { name: 'originType', alias: 'o', type: String },
+      { name: 'requireWeightAtMost', alias: 'w', type: String },
+      { name: 'encodedCall', alias: 'c', type: String },
+      { name: 'parachain', alias: 'p', type: Number }
+    ]
+
+    const optionsCommand = commandLineArgs(optionDefinitions, { argv, stopAtFirstUnknown: true });
+
+    const validOptions = (
+      optionsCommand.originType &&
+      optionsCommand.requireWeightAtMost &&
+      optionsCommand.encodedCall &&
+      optionsCommand.parachain
+    );
+
+    const validOriginTypes = (
+      ['Native', 'SovereignAccount', 'Superuser', 'Xcm'].includes(optionsCommand.originType)
+    );
+
+    if (!validOptions) {
+      console.log(`Error: -o, -w, -c and -p flags are mandatory for "${subCommand.xcm}"`);
+      process.exit(1);
+    }
+
+    if (!validOriginTypes) {
+      console.log(
+        `Error: originType "${optionsCommand.originType}" is invalid. Only 
+        'Native', 'SovereignAccount', 'Superuser', 'Xcm' are valid.
+      `);
+      process.exit(1);
+    }
+
+    const { originType, requireWeightAtMost , encodedCall, parachain } = optionsCommand;
+
+    let xcmMessage: TransactData = {
+      type,
+      originType,
+      requireWeightAtMost,
+      encodedCall
+    }
+
+    let xcm: Xcm = {
+      destination: { x1: { parachain }},
+      message: xcmMessage,
+      bridgeData,
+    }
+
+    await sendXcm(xcm, isLocal)
 
   } else {
-    console.log('Error: Invalid XCM. Only "teleport-asset" is valid');
+
+    console.log('Error: Invalid XCM. Only "teleport-asset" and "transact" are valid');
     process.exit(1);
   }
 }

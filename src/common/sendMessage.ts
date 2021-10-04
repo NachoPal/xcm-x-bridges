@@ -1,16 +1,15 @@
-import { MessageData } from '../interfaces/xcmData';
+import { BridgeData } from '../interfaces/xcmData';
 import { compactAddLength } from '@polkadot/util';
 import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
 import { getApisFromRelays } from './getApisFromRelays';
 
-export const sendMessage = async (message: MessageData) => {
+export const sendMessage = async (message: BridgeData) => {
   const {
     relayChains,
     fee,
     lane,
     signer,
-    call,
-    nonce
+    call
   } = message;
 
   const { sourceApi, targetApi } = getApisFromRelays(relayChains);

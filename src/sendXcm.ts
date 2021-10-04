@@ -3,18 +3,17 @@
 import { getApisFromRelays } from './common/getApisFromRelays';
 import getWallet from './common/getWallet';
 import { sendMessage } from './common/sendMessage';
-import { BridgeData, Xcm } from './interfaces/xcmData';
+import { Xcm, BridgeData } from './interfaces/xcmData';
 
-export const teleportAsset = async (xcm: Xcm, isLocal) => {
+export const sendXcm = async (xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {
-    case "TeleportAsset":
+    case "Transact":
       const { 
         destination,
         message: {
-          origin,
-          beneficiary,
-          amount,
-          destWeight
+          originType,
+          requireWeightAtMost,
+          encodedCall,
         },
         bridgeData: {
           relayChains,
@@ -23,20 +22,18 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
           fee
         }
       } = xcm;
-    
+
       const { sourceApi, targetApi } = getApisFromRelays(relayChains);
-    
+
       let api = isLocal ? sourceApi : targetApi;
     
-      const signerAccount = await getWallet(signer || origin);
-      const beneficiaryAccount = await getWallet(beneficiary);
+      const signerAccount = await getWallet(signer);
     
-      let beneficiaryObj = {
-        x1: { accountId32: { network: { any: true }, id: beneficiaryAccount.address }}
+      let messageObj = {
+        Transact: { originType, requireWeightAtMost, encodedCall }
       }
-      let assets = [{ concreteFungible: { here: true, amount }}]
     
-      let call = api.tx.xcmPallet.teleportAssets(destination, beneficiaryObj, assets, destWeight)
+      let call = api.tx.xcmPallet.send(destination, messageObj)
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
     
       if (isLocal) {
@@ -54,5 +51,5 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
     
       console.log("Assets Teleported")
       process.exit(0)
-  }
+  }    
 }

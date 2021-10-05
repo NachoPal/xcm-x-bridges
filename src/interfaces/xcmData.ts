@@ -24,6 +24,7 @@ export type TeleportData = {
 }
 export type TransactData = {
   type: "Transact",
+  origin: string,
   originType: string,
   requireWeightAtMost: string,
   encodedCall: string

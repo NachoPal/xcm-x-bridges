@@ -4,6 +4,7 @@ import { getApisFromRelays } from './common/getApisFromRelays';
 import getWallet from './common/getWallet';
 import { sendMessage } from './common/sendMessage';
 import { Xcm, BridgeData } from './interfaces/xcmData';
+import { hexToU8a, compactAddLength } from '@polkadot/util';
 
 export const sendXcm = async (xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {
@@ -11,6 +12,7 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
       const { 
         destination,
         message: {
+          origin,
           originType,
           requireWeightAtMost,
           encodedCall,
@@ -27,13 +29,13 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
 
       let api = isLocal ? sourceApi : targetApi;
     
-      const signerAccount = await getWallet(signer);
+      const signerAccount = await getWallet(signer || origin);
     
       let messageObj = {
-        Transact: { originType, requireWeightAtMost, encodedCall }
+        Transact: { originType, requireWeightAtMost, call: compactAddLength(hexToU8a(encodedCall)) }
       }
-    
-      let call = api.tx.xcmPallet.send(destination, messageObj)
+      let call = api.tx.sudo.sudo(api.tx.xcmPallet.send(destination, messageObj))
+
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
     
       if (isLocal) {
@@ -49,7 +51,7 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
         await sendMessage(message)
       }  
     
-      console.log("Assets Teleported")
+      console.log(`${xcm.message.type} Sent`)
       process.exit(0)
   }    
 }

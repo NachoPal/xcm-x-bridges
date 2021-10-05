@@ -28,10 +28,9 @@ export const sendMessage = async (message: BridgeData) => {
 
   const { bridgedMessages } = getSubstrateDynamicNames(relayChains.target.chain.name);
   
-  console.log(fee)
   const bridgeMessage = sourceApi.tx[bridgedMessages].sendMessage(lane, payload, fee);
 
-  let nonce2 = await sourceApi.rpc.system.accountNextIndex(signer.address);
+  let nonce = await sourceApi.rpc.system.accountNextIndex(signer.address);
 
-  await bridgeMessage.signAndSend(signer, { nonce2 });
+  await bridgeMessage.signAndSend(signer, { nonce });
 }

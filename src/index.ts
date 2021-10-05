@@ -66,9 +66,11 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 
   } else if (subCommand.xcm === 'transact') {
     let type: "Transact" = "Transact";
+    let argv = subCommand._unknown || []
 
     let optionDefinitions = [
-      { name: 'originType', alias: 'o', type: String },
+      { name: 'origin', alias: 'o', type: String },
+      { name: 'originType', alias: 't', type: String },
       { name: 'requireWeightAtMost', alias: 'w', type: String },
       { name: 'encodedCall', alias: 'c', type: String },
       { name: 'parachain', alias: 'p', type: Number }
@@ -77,6 +79,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     const optionsCommand = commandLineArgs(optionDefinitions, { argv, stopAtFirstUnknown: true });
 
     const validOptions = (
+      optionsCommand.origin &&
       optionsCommand.originType &&
       optionsCommand.requireWeightAtMost &&
       optionsCommand.encodedCall &&
@@ -88,7 +91,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     );
 
     if (!validOptions) {
-      console.log(`Error: -o, -w, -c and -p flags are mandatory for "${subCommand.xcm}"`);
+      console.log(`Error: -o, -t, -w, -c and -p flags are mandatory for "${subCommand.xcm}"`);
       process.exit(1);
     }
 
@@ -100,10 +103,11 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
       process.exit(1);
     }
 
-    const { originType, requireWeightAtMost , encodedCall, parachain } = optionsCommand;
+    const { origin, originType, requireWeightAtMost , encodedCall, parachain } = optionsCommand;
 
     let xcmMessage: TransactData = {
       type,
+      origin,
       originType,
       requireWeightAtMost,
       encodedCall
@@ -169,29 +173,49 @@ main()
 // ============================ TELEPOT ASSET - LOCAL =========================================
 // ============================================================================================
 
-// yarn dev local teleport-asset -o //Alice -b //Bob -p 2000 -a 1000000000000000 -w 100000000000
+// $ yarn dev local teleport-asset -p 2000 -o //Alice -b //Bob -a 1000000000000000 -w 100000000000
 
 // ============================================================================================
-// ======================== TELEPOT ASSET - REMOTE - Source Origin ============================
+// ============================ TELEPOT ASSET - REMOTE ========================================
 // ============================================================================================
 
-// # THE XCM IS EXECUTED BY THE COMPANION ACCOUNT IN THE TARGET RELAY CHAIN
+// -------------------------------- SOURCE ORIGIN ---------------------------------------------
+// # The Xcm is executed by the companion account if the target Relay Chain of the account that signed
+// the extrinsic in the source Relay Chain
 // # If the Companion Target Account has no balance the Remote TELEPOR ASSETS will fail
+// # Companion Account for Alice in Wococo -> 5GfixJndjo7RuMeaVGJFXiDBQogCHyhxKgGaBkjs6hj15smD
+
+// $ yarn dev remote -s //Alice -f 10000000000000 -l 0x00000000 teleport-asset -p 2000  -o //Alice -b //Bob -a 1000000000000000 -w 100000000000
+
+// -------------------------------- TARGET ORIGIN ---------------------------------------------
+// # The Xcm is executed by an account in the target Relay Chain where an account private key is owned
+// # To prove the source account owns that target account also, it will have to send a Digital Signature along
+// # with the message payload
+
 // # TODO: 'origin.sourceAccount' can be changed in the Message Payload, so we could try to use the same account that the Source Chain
-
-// yarn dev remote -s //Alice -f 10000000000000 -l 0x00000000 teleport-asset -o //Alice -b //Bob -p 2000 -a 1000000000000000 -w 100000000000
-
-// ============================================================================================
-// ======================== TELEPOT ASSET - REMOTE - Target Origin ============================
-// ============================================================================================
-
 
 // ============================================================================================
 // =========================== TRANSACT - LOCAL ===============================================
 // ============================================================================================
+// # Only SUDO Account is able to send a Transact XCM to a Parachain
+// # The Call will be dispatched by the Sovereign account in the Parachain, which is 5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM or
+// # public key: 0x0000000000000000000000000000000000000000000000000000000000000000
+// # Thus, the Sovereign Account should have some balance (1K at least for the following samples)
 
+// ----------------------------- TRANSFER BALANCE ---------------------------------------------
+// # Transact Call -> 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03 ->
+// # in Parachain -> balance.transfer 1k to Bob
+
+// $ yarn dev local transact -p 2000 -o //Alice -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+
+// ------------------- TRANSFER BALANCE IN A BRIDGE MESSAGE -----------------------------------
+// # It will be only possible for DMP in the case the parachain implements the bridge pallet
+// # An alternatie can be try to send a Xcm to HERE, and see if the Relay Chain is able to executed the
+// # bridge dispachable encoded in the Transact Xcm
 
 // ============================================================================================
 // =========================== TRANSACT - REMOTE ==============================================
 // ============================================================================================
-
+// It is expected that only TARGET ORIGIN will work, as the Transact Xcm signer should execute a sudo dispatchable
+// 
+// $ yarn dev remote -s //Alice -f 10000000000000 -l 0x00000000 transact -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03

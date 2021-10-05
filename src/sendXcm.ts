@@ -20,7 +20,9 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
         bridgeData: {
           relayChains,
           lane,
-          fee
+          fee,
+          target,
+          origin
         }
       } = xcm;
 
@@ -29,6 +31,8 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
       let api = isLocal ? sourceApi : targetApi;
     
       const signerAccount = await getWallet(signer);
+      
+      const targetAccount = await getWallet(target);
     
       let messageObj = {
         Transact: { originType, requireWeightAtMost, call: compactAddLength(hexToU8a(encodedCall)) }
@@ -45,7 +49,9 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
           signer: signerAccount,
           fee,
           lane,
-          call
+          call,
+          origin,
+          target: targetAccount
         }
         await sendMessage(message)
       }  

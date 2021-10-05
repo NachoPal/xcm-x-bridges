@@ -13,7 +13,9 @@ export interface BridgeData {
   signer: any,
   fee: string,
   lane: string,
-  call?: any
+  call?: any,
+  origin: BridgeOrigin,
+  target?: any
 }
 export type TeleportData = {
   type: "TeleportAsset",
@@ -28,4 +30,12 @@ export type TransactData = {
   originType: string,
   requireWeightAtMost: string,
   encodedCall: string
+}
+
+// export type SourceAccount = "SourceAccount"
+// export type TargetAccount = "TargetAccount"
+// export type RootAccount = "RootAccount"
+
+export type BridgeOrigin = {
+  type: "SourceAccount" | "TargetAccount" | "SourceRoot"
 }

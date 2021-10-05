@@ -19,7 +19,9 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
         bridgeData: {
           relayChains,
           lane,
-          fee
+          fee,
+          target,
+          origin
         }
       } = xcm;
     
@@ -29,6 +31,8 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
     
       const signerAccount = await getWallet(signer);
       const beneficiaryAccount = await getWallet(beneficiary);
+
+      const targetAccount = await getWallet(target);
     
       let beneficiaryObj = {
         x1: { accountId32: { network: { any: true }, id: beneficiaryAccount.address }}
@@ -46,7 +50,9 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
           signer: signerAccount,
           fee,
           lane,
-          call
+          call,
+          origin,
+          target
         }
         await sendMessage(message)
       }  

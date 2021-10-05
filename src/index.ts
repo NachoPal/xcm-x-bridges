@@ -1,6 +1,6 @@
 import commandLineArgs from 'command-line-args';
 import connectToRelayChains from './common/connectToRelayChains';
-import { TeleportData, TransactData, Xcm, BridgeData } from './interfaces/xcmData';
+import { TeleportData, TransactData, Xcm, BridgeData, BridgeOrigin } from './interfaces/xcmData';
 import { teleportAsset } from './teleportAssets';
 import { sendXcm } from './sendXcm';
 
@@ -13,11 +13,15 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 
   const subCommand = commandLineArgs(subDefinitions, { argv, stopAtFirstUnknown: true })
 
+  let origin: BridgeOrigin = { type: targetCommands?.bridgeOrigin }
+
   let bridgeData: BridgeData = {
     relayChains,
     signer: targetCommands?.signer,
     fee: targetCommands?.fee,
     lane: targetCommands?.lane,
+    origin, 
+    target: targetCommands?.bridgeTarget
   }
 
   if (subCommand.xcm === 'teleport-asset') {
@@ -145,17 +149,29 @@ const main = async () => {
   } else if (mainCommand.target === 'remote') {
     let targetDefinitions = [
       { name: 'fee', alias: 'f', type: String },
-      { name: 'lane', alias: 'l', type: String }
+      { name: 'lane', alias: 'l', type: String },
+      { name: 'bridgeOrigin', alias: 'o', type: String },
+      { name: 'targetAccount', alias: 't', type: String },
+
     ]
 
     const targetCommand = commandLineArgs(targetDefinitions, { argv, stopAtFirstUnknown: true })
 
-    const validTarget = (
-      targetCommand.signer && targetCommand.fee && targetCommand.lane
-    )
+    const { fee, lane, bridgeOrigin, targetAccount } = targetCommand;
+
+    const validTarget = (fee && lane && (bridgeOrigin === "TargetAccount" ? targetAccount : true ))
 
     if (!validTarget) {
-      console.log(`Error: -f and -l flags are mandatory for "${mainCommand.target}" target`);
+      console.log(`Error: -o, -f and -l flags are mandatory for "${mainCommand.target}" target`);
+      process.exit(1);
+    }
+
+    const validBridgeTarget = ["TargetAccount", "SourceAccount", "SourceRoot"].includes(bridgeOrigin)
+
+    if (!validBridgeTarget) {
+      console.log(
+        `Error: "${mainCommand.bridgeTarget}" is invalid. Only "SourceAccount", "TargetAccount" and "SourceRoot" are valid`
+      );
       process.exit(1);
     }
 
@@ -184,7 +200,7 @@ main()
 // # If the Companion Target Account has no balance the Remote TELEPOR ASSETS will fail
 // # Companion Account for Alice in Wococo -> 5GfixJndjo7RuMeaVGJFXiDBQogCHyhxKgGaBkjs6hj15smD
 
-// $ yarn dev remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+// $ yarn dev remote -o SourceAccount -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
 
 // -------------------------------- TARGET ORIGIN ---------------------------------------------
 // # The Xcm is executed by an account in the target Relay Chain where an account private key is owned
@@ -217,4 +233,4 @@ main()
 // ============================================================================================
 // It is expected that only TARGET ORIGIN will work, as the Transact Xcm signer should execute a sudo dispatchable
 // 
-// $ yarn dev remote -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+// $ yarn dev remote -o SourceAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03

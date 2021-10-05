@@ -9,7 +9,9 @@ export const sendMessage = async (message: BridgeData) => {
     fee,
     lane,
     signer,
-    call
+    call,
+    origin,
+    target
   } = message;
 
   const { sourceApi, targetApi } = getApisFromRelays(relayChains);
@@ -17,12 +19,35 @@ export const sendMessage = async (message: BridgeData) => {
   let callPayload = (await call).toU8a().slice(2)
   let weight = (await call.paymentInfo(signer)).weight.toNumber();
 
+  let callCompact = compactAddLength(callPayload!)
+  let specVersion = targetApi.consts.system.version.specVersion.toNumber();
+
+  let sourceChainAccountId = signer!.addressRaw
+  let targetChainAccountPublic = target.addressRaw
+
+  // DIGITAL SIGNATURE
+  // Concat of [callPlayload.encode(), sourceChainAccountId.encode(), specVersion.encode(), sourceChainBridgeId.encode(), targetChainBridgeId.encode()] and signed
+  // let message = [callPlayload.encode(), sourceChainAccountId.encode(), specVersion.encode(), sourceChainBridgeId.encode(), targetChainBridgeId.encode()]
+  // let targetChainSignature = signer.sign(message)
+
+  // let message = (callPlayload, sourceChainAccountId, specVersion, sourceChainBridgeId).toU8a()
+  let targetChainSignature = {}
+
+  let originPayload: Object;
+
+  if (origin.type === "TargetAccount") {
+    originPayload = { TargetAccount: [sourceChainAccountId, targetChainAccountPublic, targetChainSignature] }
+  } else if (origin.type === "SourceRoot") {
+    // Not Implemented
+    originPayload = { RootSource: signer!.addressRaw }
+  } else {
+    originPayload = { SourceAccount: signer!.addressRaw }
+  }
+
   const payload = {
-    call: compactAddLength(callPayload!),
-    origin: {
-      SourceAccount: signer!.addressRaw
-    },
-    spec_version: targetApi.consts.system.version.specVersion.toNumber(),
+    call: callCompact,
+    origin: originPayload,
+    spec_version: specVersion,
     weight
   };
 

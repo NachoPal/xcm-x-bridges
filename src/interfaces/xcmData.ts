@@ -17,14 +17,14 @@ export interface BridgeData {
 }
 export type TeleportData = {
   type: "TeleportAsset",
-  origin: string,
+  signer: any,
   beneficiary: string,
   amount: string,
   destWeight: string,
 }
 export type TransactData = {
   type: "Transact",
-  origin: string,
+  signer: any,
   originType: string,
   requireWeightAtMost: string,
   encodedCall: string

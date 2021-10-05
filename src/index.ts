@@ -25,7 +25,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     let argv = subCommand._unknown || []
 
     let optionDefinitions = [
-      { name: 'origin', alias: 'o', type: String },
+      { name: 'signer', alias: 's', type: String },
       { name: 'beneficiary', alias: 'b', type: String },
       { name: 'amount', alias: 'a', type: String },
       { name: 'destWeight', alias: 'w', type: String },
@@ -34,7 +34,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     const optionsCommand = commandLineArgs(optionDefinitions, { argv, stopAtFirstUnknown: true });
 
     const validOptions = (
-      optionsCommand.origin &&
+      optionsCommand.signer &&
       optionsCommand.beneficiary &&
       optionsCommand.amount &&
       optionsCommand.destWeight &&
@@ -42,15 +42,15 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     );
 
     if (!validOptions) {
-      console.log(`Error: -o, -b, -a, -w and -p flags are mandatory for "${subCommand.xcm}"`);
+      console.log(`Error: -s, -b, -a, -w and -p flags are mandatory for "${subCommand.xcm}"`);
       process.exit(1);
     }
 
-    const { origin, beneficiary, parachain, amount, destWeight } = optionsCommand;
+    const { signer, beneficiary, parachain, amount, destWeight } = optionsCommand;
 
     let xcmMessage: TeleportData = {
       type,
-      origin,
+      signer,
       beneficiary,
       amount,
       destWeight
@@ -69,7 +69,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     let argv = subCommand._unknown || []
 
     let optionDefinitions = [
-      { name: 'origin', alias: 'o', type: String },
+      { name: 'signer', alias: 's', type: String },
       { name: 'originType', alias: 't', type: String },
       { name: 'requireWeightAtMost', alias: 'w', type: String },
       { name: 'encodedCall', alias: 'c', type: String },
@@ -79,7 +79,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     const optionsCommand = commandLineArgs(optionDefinitions, { argv, stopAtFirstUnknown: true });
 
     const validOptions = (
-      optionsCommand.origin &&
+      optionsCommand.signer &&
       optionsCommand.originType &&
       optionsCommand.requireWeightAtMost &&
       optionsCommand.encodedCall &&
@@ -91,7 +91,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     );
 
     if (!validOptions) {
-      console.log(`Error: -o, -t, -w, -c and -p flags are mandatory for "${subCommand.xcm}"`);
+      console.log(`Error: -s, -t, -w, -c and -p flags are mandatory for "${subCommand.xcm}"`);
       process.exit(1);
     }
 
@@ -103,11 +103,11 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
       process.exit(1);
     }
 
-    const { origin, originType, requireWeightAtMost , encodedCall, parachain } = optionsCommand;
+    const { signer, originType, requireWeightAtMost , encodedCall, parachain } = optionsCommand;
 
     let xcmMessage: TransactData = {
       type,
-      origin,
+      signer,
       originType,
       requireWeightAtMost,
       encodedCall
@@ -144,7 +144,6 @@ const main = async () => {
 
   } else if (mainCommand.target === 'remote') {
     let targetDefinitions = [
-      { name: 'signer', alias: 's', type: String },
       { name: 'fee', alias: 'f', type: String },
       { name: 'lane', alias: 'l', type: String }
     ]
@@ -156,7 +155,7 @@ const main = async () => {
     )
 
     if (!validTarget) {
-      console.log(`Error: -s, -f and -l flags are mandatory for "${mainCommand.target}" target`);
+      console.log(`Error: -f and -l flags are mandatory for "${mainCommand.target}" target`);
       process.exit(1);
     }
 
@@ -173,7 +172,7 @@ main()
 // ============================ TELEPOT ASSET - LOCAL =========================================
 // ============================================================================================
 
-// $ yarn dev local teleport-asset -p 2000 -o //Alice -b //Bob -a 1000000000000000 -w 100000000000
+// $ yarn dev local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
 
 // ============================================================================================
 // ============================ TELEPOT ASSET - REMOTE ========================================
@@ -185,7 +184,7 @@ main()
 // # If the Companion Target Account has no balance the Remote TELEPOR ASSETS will fail
 // # Companion Account for Alice in Wococo -> 5GfixJndjo7RuMeaVGJFXiDBQogCHyhxKgGaBkjs6hj15smD
 
-// $ yarn dev remote -s //Alice -f 10000000000000 -l 0x00000000 teleport-asset -p 2000  -o //Alice -b //Bob -a 1000000000000000 -w 100000000000
+// $ yarn dev remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
 
 // -------------------------------- TARGET ORIGIN ---------------------------------------------
 // # The Xcm is executed by an account in the target Relay Chain where an account private key is owned
@@ -206,7 +205,7 @@ main()
 // # Transact Call -> 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03 ->
 // # in Parachain -> balance.transfer 1k to Bob
 
-// $ yarn dev local transact -p 2000 -o //Alice -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+// $ yarn dev local transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
 
 // ------------------- TRANSFER BALANCE IN A BRIDGE MESSAGE -----------------------------------
 // # It will be only possible for DMP in the case the parachain implements the bridge pallet
@@ -218,4 +217,4 @@ main()
 // ============================================================================================
 // It is expected that only TARGET ORIGIN will work, as the Transact Xcm signer should execute a sudo dispatchable
 // 
-// $ yarn dev remote -s //Alice -f 10000000000000 -l 0x00000000 transact -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+// $ yarn dev remote -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03

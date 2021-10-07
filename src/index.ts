@@ -21,7 +21,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     fee: targetCommands?.fee,
     lane: targetCommands?.lane,
     origin, 
-    target: targetCommands?.bridgeTarget
+    target: targetCommands?.bridgeTargetAccount
   }
 
   if (subCommand.xcm === 'teleport-asset') {
@@ -74,7 +74,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 
     let optionDefinitions = [
       { name: 'signer', alias: 's', type: String },
-      { name: 'originType', alias: 't', type: String },
+      { name: 'originType', alias: 't', type: String  },
       { name: 'requireWeightAtMost', alias: 'w', type: String },
       { name: 'encodedCall', alias: 'c', type: String },
       { name: 'parachain', alias: 'p', type: Number }
@@ -150,16 +150,15 @@ const main = async () => {
     let targetDefinitions = [
       { name: 'fee', alias: 'f', type: String },
       { name: 'lane', alias: 'l', type: String },
-      { name: 'bridgeOrigin', alias: 'o', type: String },
-      { name: 'targetAccount', alias: 't', type: String },
-
+      { name: 'bridgeOrigin', alias: 'o', type: String, defaultValue: "SourceAccount" },
+      { name: 'bridgeTargetAccount', alias: 't', type: String },
     ]
 
     const targetCommand = commandLineArgs(targetDefinitions, { argv, stopAtFirstUnknown: true })
 
-    const { fee, lane, bridgeOrigin, targetAccount } = targetCommand;
+    const { fee, lane, bridgeOrigin, bridgeTargetAccount } = targetCommand;
 
-    const validTarget = (fee && lane && (bridgeOrigin === "TargetAccount" ? targetAccount : true ))
+    const validTarget = (fee && lane && (bridgeOrigin === "TargetAccount" ? bridgeTargetAccount : true ))
 
     if (!validTarget) {
       console.log(`Error: -o, -f and -l flags are mandatory for "${mainCommand.target}" target`);
@@ -200,7 +199,7 @@ main()
 // # If the Companion Target Account has no balance the Remote TELEPOR ASSETS will fail
 // # Companion Account for Alice in Wococo -> 5GfixJndjo7RuMeaVGJFXiDBQogCHyhxKgGaBkjs6hj15smD
 
-// $ yarn dev remote -o SourceAccount -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+// $ yarn dev remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
 
 // -------------------------------- TARGET ORIGIN ---------------------------------------------
 // # The Xcm is executed by an account in the target Relay Chain where an account private key is owned
@@ -208,6 +207,8 @@ main()
 // # with the message payload
 
 // # TODO: 'origin.sourceAccount' can be changed in the Message Payload, so we could try to use the same account that the Source Chain
+
+// $ yarn dev remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
 
 // ============================================================================================
 // =========================== TRANSACT - LOCAL ===============================================
@@ -224,13 +225,15 @@ main()
 // $ yarn dev local transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
 
 // ------------------- TRANSFER BALANCE IN A BRIDGE MESSAGE -----------------------------------
-// # It will be only possible for DMP in the case the parachain implements the bridge pallet
-// # An alternatie can be try to send a Xcm to HERE, and see if the Relay Chain is able to executed the
+// # It will be only possible for a UMP, since the Relay Chain is the one who implements the Bridges pallet
+// # For DMP, it would be only possible if the parachain implements the bridge pallet
+// # An alternative can be trying to send a Xcm to HERE, and see if the Relay Chain is able to executed the
 // # bridge dispachable encoded in the Transact Xcm
 
 // ============================================================================================
 // =========================== TRANSACT - REMOTE ==============================================
 // ============================================================================================
 // It is expected that only TARGET ORIGIN will work, as the Transact Xcm signer should execute a sudo dispatchable
+// Remember to send some balance to the Sovereign Account in Target contest (Rococo) -> 5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM
 // 
-// $ yarn dev remote -o SourceAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+// $ yarn dev remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03

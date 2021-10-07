@@ -9,7 +9,7 @@ echo "Rococo Relaychain start up"
 ./bin/polkadot build-spec --chain ./resources/chain-specs/rococo-local.json --raw --disable-default-bootnode > ./resources/chain-specs/rococo-local-raw.json
 
 # RUST_LOG=runtime=trace,runtime::bridge=trace,runtime::bridge-messages=trace
-RUST_LOG=xcm::send_xcm=trace
+RUST_LOG=xcm::send_xcm=trace,nacho=debug
 export RUST_LOG
 
 # start Rococo nodes

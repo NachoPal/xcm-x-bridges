@@ -31,8 +31,6 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
       let api = isLocal ? sourceApi : targetApi;
     
       const signerAccount = await getWallet(signer);
-      
-      const targetAccount = await getWallet(target);
     
       let messageObj = {
         Transact: { originType, requireWeightAtMost, call: compactAddLength(hexToU8a(encodedCall)) }
@@ -44,6 +42,8 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
       if (isLocal) {
         await (await call).signAndSend(signerAccount, { nonce, era: 0 });
       } else {
+        const targetAccount = target ? await getWallet(target) : undefined;
+
         let message: BridgeData = {
           relayChains,
           signer: signerAccount,

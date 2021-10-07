@@ -2,6 +2,9 @@ import { BridgeData } from '../interfaces/xcmData';
 import { compactAddLength } from '@polkadot/util';
 import { getSubstrateDynamicNames } from './getSubstrateDynamicNames';
 import { getApisFromRelays } from './getApisFromRelays';
+import { getBridgeId } from './getConfigs';
+import {  } from '@polkadot/util'
+
 
 export const sendMessage = async (message: BridgeData) => {
   const {
@@ -20,22 +23,29 @@ export const sendMessage = async (message: BridgeData) => {
   let weight = (await call.paymentInfo(signer)).weight.toNumber();
 
   let callCompact = compactAddLength(callPayload!)
-  let specVersion = targetApi.consts.system.version.specVersion.toNumber();
+  let specVersion = targetApi.consts.system.version.specVersion;
 
-  let sourceChainAccountId = signer!.addressRaw
-  let targetChainAccountPublic = target.addressRaw
+  let sourceChainAccountId = signer!.address
+  let sourceChainAccountIdRaw = signer!.addressRaw;
 
-  // DIGITAL SIGNATURE
-  // Concat of [callPlayload.encode(), sourceChainAccountId.encode(), specVersion.encode(), sourceChainBridgeId.encode(), targetChainBridgeId.encode()] and signed
-  // let message = [callPlayload.encode(), sourceChainAccountId.encode(), specVersion.encode(), sourceChainBridgeId.encode(), targetChainBridgeId.encode()]
-  // let targetChainSignature = signer.sign(message)
-
-  // let message = (callPlayload, sourceChainAccountId, specVersion, sourceChainBridgeId).toU8a()
-  let targetChainSignature = {}
+  let sourceChainId = getBridgeId(targetApi, relayChains.source.chain.name)
+  let targetChainId = getBridgeId(sourceApi, relayChains.target.chain.name)
 
   let originPayload: Object;
 
   if (origin.type === "TargetAccount") {
+
+    let encodedMessage = [
+      ...callPayload, 
+      ...sourceChainAccountIdRaw, 
+      ...specVersion.toU8a(),
+      ...sourceChainId, 
+      ...targetChainId
+    ]
+
+    let targetChainSignature = { Sr25519: target.sign(encodedMessage) }
+    let targetChainAccountPublic = { Sr25519: target.publicKey }
+
     originPayload = { TargetAccount: [sourceChainAccountId, targetChainAccountPublic, targetChainSignature] }
   } else if (origin.type === "SourceRoot") {
     // Not Implemented
@@ -47,7 +57,7 @@ export const sendMessage = async (message: BridgeData) => {
   const payload = {
     call: callCompact,
     origin: originPayload,
-    spec_version: specVersion,
+    spec_version: specVersion.toNumber(),
     weight
   };
 

@@ -8,7 +8,7 @@ echo "Rococo Parachain start up"
 ./bin/polkadot-collator export-genesis-state --parachain-id 2000 > ./resources/parachains/rococo-2000-genesis
 ./bin/polkadot-collator export-genesis-wasm > ./resources/parachains/rococo-2000-wasm
 
-RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor=debug,xcm:pallet-xcm=debug,xcm:currency_adapter=debug
+RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor=debug,xcm:pallet-xcm=debug,xcm:currency_adapter=debug,xcm:barrier=debug,xcm:origin-conversion=debug
 
 # Collator 1
 ./bin/polkadot-collator\

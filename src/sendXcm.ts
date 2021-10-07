@@ -3,18 +3,19 @@
 import { getApisFromRelays } from './common/getApisFromRelays';
 import getWallet from './common/getWallet';
 import { sendMessage } from './common/sendMessage';
-import { BridgeData, Xcm } from './interfaces/xcmData';
+import { Xcm, BridgeData } from './interfaces/xcmData';
+import { hexToU8a, compactAddLength } from '@polkadot/util';
 
-export const teleportAsset = async (xcm: Xcm, isLocal) => {
+export const sendXcm = async (xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {
-    case "TeleportAsset":
+    case "Transact":
       const { 
         destination,
         message: {
           signer,
-          beneficiary,
-          amount,
-          destWeight
+          originType,
+          requireWeightAtMost,
+          encodedCall,
         },
         bridgeData: {
           relayChains,
@@ -24,28 +25,23 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
           origin
         }
       } = xcm;
-    
+
       const { sourceApi, targetApi } = getApisFromRelays(relayChains);
-    
+
       let api = isLocal ? sourceApi : targetApi;
     
       const signerAccount = await getWallet(signer);
-      const beneficiaryAccount = await getWallet(beneficiary);
-
     
-      let beneficiaryObj = {
-        x1: { accountId32: { network: { any: true }, id: beneficiaryAccount.address }}
+      let messageObj = {
+        Transact: { originType, requireWeightAtMost, call: compactAddLength(hexToU8a(encodedCall)) }
       }
-      let assets = [{ concreteFungible: { here: true, amount }}]
-    
-      let call = api.tx.xcmPallet.teleportAssets(destination, beneficiaryObj, assets, destWeight)
+      let call = api.tx.sudo.sudo(api.tx.xcmPallet.send(destination, messageObj))
+
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
     
       if (isLocal) {
         await (await call).signAndSend(signerAccount, { nonce, era: 0 });
       } else {
-        console.log(target)
-        console.log(origin)
         const targetAccount = target ? await getWallet(target) : undefined;
 
         let message: BridgeData = {
@@ -60,7 +56,7 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
         await sendMessage(message)
       }  
     
-      console.log("Assets Teleported")
+      console.log(`${xcm.message.type} Sent`)
       process.exit(0)
-  }
+  }    
 }

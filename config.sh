@@ -3,8 +3,9 @@
 set -e
 
 POLKADOT_REPO_PATH=../polkadot
-BRIDGES_REPO_PATH=../parity-bridges-common
 PARACHAIN_REPO_PATH=../cumulus
+BRIDGES_REPO_PATH=../parity-bridges-common
+
 
 ROCOCO_HOST=127.0.0.1
 ROCOCO_PORT=9944

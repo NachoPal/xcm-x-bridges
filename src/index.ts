@@ -233,7 +233,11 @@ main()
 // ============================================================================================
 // =========================== TRANSACT - REMOTE ==============================================
 // ============================================================================================
+
+// -------------------------------- SOURCE ORIGIN ---------------------------------------------
 // It is expected that only TARGET ORIGIN will work, as the Transact Xcm signer should execute a sudo dispatchable
 // Remember to send some balance to the Sovereign Account in Target contest (Rococo) -> 5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM
-// 
+//
+// -------------------------------- TARGET ORIGIN ---------------------------------------------
+//
 // $ yarn dev remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03

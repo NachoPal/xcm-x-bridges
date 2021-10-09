@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node ./bin/index.js",
     "dev": "ts-node ./src/index.ts",
+    "dmp": "ts-node ./src/index.ts dmp",
     "dev:register-parachains": "ts-node ./src/registerParachains.ts",
     "register-parachains": "node ./bin/src/registerParachains.js"
   },

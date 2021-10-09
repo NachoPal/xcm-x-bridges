@@ -23,8 +23,8 @@ then
 fi  
 
 . ./scripts/build/polkadot-node.sh
-. ./scripts/build/substrate-relay.sh
 . ./scripts/build/parachain-collator.sh
+. ./scripts/build/substrate-relay.sh 
 
 # Source Context
 . ./scripts/run/source-relaychain.sh

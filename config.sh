@@ -9,8 +9,6 @@ BRIDGES_REPO_PATH=../parity-bridges-common
 RUNTIME_SOURCE=rococo-local
 RUNTIME_TARGET=wococo-local
 
-SKIP_BRIDGE=false
-
 HEADERS_BRIDGE_SOURCE=rococo-to-wococo
 HEADERS_BRIDGE_TARGET=wococo-to-rococo
 BRIDGE_RELAYERS=rococo-wococo

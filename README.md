@@ -90,7 +90,7 @@ A Comand Line Interface is available to run the samples. The command has the fol
   - `dmp`: Downward Message Passing
   - `ump`: Upward Message Passing
   - `hmp`: Horizontal Message Passing
-</br>
+
 * `TARGET`: context the message is going to be executed
   - `local`: the message is executed in the _Source Chain_
   - `remote`: the message is passed through the bridge to the _Target Chain_ and executed there.
@@ -100,7 +100,7 @@ A Comand Line Interface is available to run the samples. The command has the fol
       - `SourceAccount`: represents an account without a private key on the target-chain. This account will be generated/derived using the account ID of the sender on the source-chain
       - `TargetAccount`: represents an account with a private key on the target-chain. The sender on the source-chain needs to prove ownership of this account by using their target-chain private key to sign a proof.
       - `SourceRoot`: represents the source-chain's Root account on the target-chain. This origin can only be dispatched on the target chain if the "send message" request was made by the Root origin of the source chain - otherwise the message will fail to be dispatched
-</br>
+
 * `XCM`: XCM instruction type. All instructions but `teleport-asset` will fallback to the `send()` dispatchable from the `xcmPallet`
   - `teleport-asset`: call to the `teleportAsset()` dispatachable call from the `xcmPallet`
     - `-p`: parachain ID destiantion | `2000` (Default)

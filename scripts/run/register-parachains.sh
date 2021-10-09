@@ -14,8 +14,8 @@ fi
 echo "Registering Parachains"
 
 yarn "$dev"register-parachains\
-  -g rococo-2000-genesis wococo-2000-genesis\
-  -w rococo-2000-wasm wococo-2000-wasm\
+  -g source-2000-genesis target-2000-genesis\
+  -w source-2000-wasm target-2000-wasm\
   -i 2000 2000\
-  -p $ROCOCO_PORT $WOCOCO_PORT\
+  -p $SOURCE_PORT $TARGET_PORT\
   -u //Alice //Alice &> ./logs/register-parachains.log&

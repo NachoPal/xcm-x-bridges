@@ -1,12 +1,19 @@
 #!/bin/bash
+. ./config.sh
 
 # ###############################################################################
-# ### Woocco chain startup ######################################################
+# ### Target chain startup ######################################################
 # ###############################################################################
-echo "Wococo Relaychain start up"
+echo "Target Relaychain start up"
 
-./bin/polkadot build-spec --disable-default-bootnode --chain wococo-local > ./resources/chain-specs/wococo-local.json
-./bin/polkadot build-spec --chain ./resources/chain-specs/wococo-local.json --raw --disable-default-bootnode > ./resources/chain-specs/wococo-local-raw.json
+./bin/polkadot build-spec\
+  --disable-default-bootnode\
+  --chain $RUNTIME_TARGET > ./resources/chain-specs/target.json
+
+./bin/polkadot build-spec\
+  --chain ./resources/chain-specs/target.json\
+  --raw\
+  --disable-default-bootnode > ./resources/chain-specs/target-raw.json
 
 # RUST_LOG=runtime=trace,runtime::bridge=trace,runtime::bridge-messages=trace
 RUST_LOG=xcm::send_xcm=trace,nacho=debug
@@ -15,26 +22,26 @@ export RUST_LOG
 # start Wococo nodes
 ./bin/polkadot\
   -lerror\
-	--chain=wococo-local\
+	--chain=$RUNTIME_TARGET\
 	--alice\
-	--base-path=data/wococo-alice.db\
-	--node-key-file=resources/node-keys/wococo-alice\
+	--base-path=data/target-alice.db\
+	--node-key-file=resources/node-keys/target-alice\
 	--port=30337\
 	--prometheus-port=9617\
 	--rpc-port=9935\
-	--ws-port=9948\
+	--ws-port=$TARGET_PORT\
 	--execution=Native\
   --no-mdns\
 	--rpc-cors=all\
 	--unsafe-rpc-external\
-	--unsafe-ws-external &> ./logs/wococo-alice.log&
+	--unsafe-ws-external &> ./logs/target-alice.log&
 
 ./bin/polkadot\
   -lerror\
-	--chain=wococo-local\
+	--chain=$RUNTIME_TARGET\
 	--bob\
-	--base-path=data/wococo-bob.db\
-  --node-key-file=resources/node-keys/wococo-bob\
+	--base-path=data/target-bob.db\
+  --node-key-file=resources/node-keys/target-bob\
 	--bootnodes=/ip4/127.0.0.1/tcp/30337/p2p/12D3KooWCNRrHY8vJgnh6trkWw9nGFM2h4MJvzSqCRisxDXkdX3E\
 	--port=30338\
 	--prometheus-port=9618\
@@ -44,4 +51,4 @@ export RUST_LOG
   --no-mdns\
 	--rpc-cors=all\
 	--unsafe-rpc-external\
-  --unsafe-ws-external &> ./logs/wococo-bob.log&
+  --unsafe-ws-external &> ./logs/target-bob.log&

@@ -136,17 +136,27 @@ const main = async () => {
   const relayChains = await connectToRelayChains(9944, 9948);
 
   let mainDefinitions = [
-    { name: 'target', defaultOption: true },
+    { name: 'messaging', defaultOption: true },
   ]
   const mainCommand = commandLineArgs(mainDefinitions, { stopAtFirstUnknown: true })
   let argv = mainCommand._unknown || []
 
-  let isLocal = mainCommand.target === 'local' ? true : false; 
+  // console.log(mainCommand.messaging)
 
-  if (mainCommand.target === 'local') {
-    await subCommands(isLocal, mainCommand, relayChains)
+  let contextDefinitions = [
+    { name: 'target', defaultOption: true },
+  ]
+  const contextCommand = commandLineArgs(contextDefinitions, { argv,  stopAtFirstUnknown: true })
+  argv = contextCommand._unknown || []
 
-  } else if (mainCommand.target === 'remote') {
+  console.log(contextCommand)
+
+  let isLocal = contextCommand.target === 'local' ? true : false; 
+
+  if (contextCommand.target === 'local') {
+    await subCommands(isLocal, contextCommand, relayChains)
+
+  } else if (contextCommand.target === 'remote') {
     let targetDefinitions = [
       { name: 'fee', alias: 'f', type: String },
       { name: 'lane', alias: 'l', type: String },
@@ -161,7 +171,7 @@ const main = async () => {
     const validTarget = (fee && lane && (bridgeOrigin === "TargetAccount" ? bridgeTargetAccount : true ))
 
     if (!validTarget) {
-      console.log(`Error: -o, -f and -l flags are mandatory for "${mainCommand.target}" target`);
+      console.log(`Error: -o, -f and -l flags are mandatory for "${contextCommand.target}" target`);
       process.exit(1);
     }
 
@@ -169,7 +179,7 @@ const main = async () => {
 
     if (!validBridgeTarget) {
       console.log(
-        `Error: "${mainCommand.bridgeTarget}" is invalid. Only "SourceAccount", "TargetAccount" and "SourceRoot" are valid`
+        `Error: "${contextCommand.bridgeTarget}" is invalid. Only "SourceAccount", "TargetAccount" and "SourceRoot" are valid`
       );
       process.exit(1);
     }

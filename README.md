@@ -65,7 +65,7 @@ To change the Relay Chain runtimes:
 # Destroy
 `$ ./stop`
 
-# Messaging Overview
+# Messaging
 Relay Chains have a few different mechanisms that are responsible for message passing. They can be generally divided on two categories: Horizontal and Vertical. Horizontal Message Passing (HMP) refers to mechanisms that are responsible for exchanging messages between parachains. Vertical Message Passing (VMP) is used for communication between the relay chain and parachains.
 
 ## Vertical Message Passing
@@ -119,3 +119,5 @@ A Comand Line Interface is available to run the samples. The command has the fol
     - `-c`: encoded call to be executed in the parachain target
     - `-w`: required weight at most
       
+# Samples
+## DMP

@@ -26,11 +26,13 @@ fi
 . ./scripts/build/substrate-relay.sh
 . ./scripts/build/parachain-collator.sh
 
-. ./scripts/run/rococo-relaychain.sh
-. ./scripts/run/rococo-parachain.sh
+# Source Context
+. ./scripts/run/source-relaychain.sh
+. ./scripts/run/source-parachain.sh
 
-. ./scripts/run/wococo-relaychain.sh
-. ./scripts/run/wococo-parachain.sh
+# Target Context
+. ./scripts/run/target-relaychain.sh
+. ./scripts/run/target-parachain.sh
 
 . ./scripts/run/headers-messages-relayer.sh
 

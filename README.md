@@ -46,17 +46,17 @@ To make sure you are able to successfully run the samples locally, checkout to o
   release-<polkadot/cumulus_version>-<source_para_runtime>::<source_relay_runtime><><target_relay_runtime>::<target_para_runtime>-<bridges_common_version>
   ```
 For instance, `release-0.9.10-rococo::rococo<>wococo::rococo-0.9` is telling us that the release was tested against the following versions
-- Polkadot: `release-v0.9.10`
-- Cumulus: `polkadot-v0.9.10`
-- Relay Chain Runtimes: `rococo-local` and `wococo-local`
-- Parachains Runtimes: `rococo-local` and `rococo-local`
-- Bridges Common: `v0.9`
+- **Polkadot**: `release-v0.9.10`
+- **Cumulus**: `polkadot-v0.9.10`
+- **Relay Chain Runtimes**: `rococo-local` and `wococo-local`
+- **Parachains Runtimes**: `rococo-local` and `rococo-local`
+- **Bridges Common**: `v0.9`
 
 There might be cases where a certain runtime is not yet supported by _Bridges Common_, or we just do not want to implement it. Therefore, _Bridges Common_ and a target runtimes are not necessary. For those cases, `release-0.9.10-rococo::rococo` woulde be telling us that the release was tested against the following versions
-- Polkadot: `release-v0.9.10`
-- Cumulus: `polkadot-v0.9.10`
-- Relay Chain Runtime: `rococo-local`
-- Parachains Runtime: `rococo-local`
+- **Polkadot**: `release-v0.9.10`
+- **Cumulus**: `polkadot-v0.9.10`
+- **Relay Chain Runtime**: `rococo-local`
+- **Parachains Runtime**: `rococo-local`
 
 # Set Up
 Unless you want to run the samples against unimplemented runtimes, the default values should be valid and the only variables you should update in `./config.sh` are:
@@ -148,16 +148,16 @@ $ yarn dev dmp local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000
 The Xcm is executed by the _Companion Account_ in the target _Relay Chain_.
 Therefore, the _Companion Account_ should have some balance (1K at least for the following sample). `//Alice` _Companion Account_ in Wococo is: `5GfixJndjo7RuMeaVGJFXiDBQogCHyhxKgGaBkjs6hj15smD`
 
-```
-$ yarn dev dmp remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
-```
+                ```
+                $ yarn dev dmp remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+                ```
 
 * `TargetAccount`:
 The Xcm is executed by an owned account in the target _Relay Chain_
 
-```
-$ yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
-```
+                ```
+                $ yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+                ```
 
 ### Transact
 #### Local
@@ -179,6 +179,6 @@ This case is not possible as a `Transact` XCM can only be executed by Root.
 * `TargetAccount`:
 The Root Account private key of the target key should be know to be able to use this option. The _Sovereign Account_ `5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM` of the target _Parachain_ should have some balance.
 
-```
-$ yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
-```
+                ```
+                $ yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+                ```

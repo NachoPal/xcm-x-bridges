@@ -43,16 +43,16 @@ To make sure you are able to successfully run the samples locally, checkout to o
 
 **Release format**:
   ```
-  release-<polkadot/cumulus_version>-<source_para_runtime>::<source_relay_runtime><><target_relay_runtime>::<target_para_runtime>-<bridges_common_version>
+  release-<polkadot/cumulus_version>-<source_para_runtime>_<source_relay_runtime>-<target_relay_runtime>_<target_para_runtime>-<bridges_common_version>
   ```
-For instance, `release-0.9.10-rococo::rococo<>wococo::rococo-0.9` is telling us that the release was tested against the following versions
+For instance, `release-0.9.10-rococo_rococo-wococo_rococo-0.9` is telling us that the release was tested against the following versions
 - **Polkadot**: `release-v0.9.10`
 - **Cumulus**: `polkadot-v0.9.10`
 - **Relay Chain Runtimes**: `rococo-local` and `wococo-local`
 - **Parachains Runtimes**: `rococo-local` and `rococo-local`
 - **Bridges Common**: `v0.9`
 
-There might be cases where a certain runtime is not yet supported by _Bridges Common_, or we just do not want to implement it. Therefore, _Bridges Common_ and a target runtimes are not necessary. For those cases, `release-0.9.10-rococo::rococo` woulde be telling us that the release was tested against the following versions
+There might be cases where a certain runtime is not yet supported by _Bridges Common_, or we just do not want to implement it. Therefore, _Bridges Common_ and a target runtimes are not necessary. For those cases, `release-0.9.10-rococo_rococo` woulde be telling us that the release was tested against the following versions
 - **Polkadot**: `release-v0.9.10`
 - **Cumulus**: `polkadot-v0.9.10`
 - **Relay Chain Runtime**: `rococo-local`

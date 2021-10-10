@@ -149,8 +149,6 @@ const main = async () => {
   const contextCommand = commandLineArgs(contextDefinitions, { argv,  stopAtFirstUnknown: true })
   argv = contextCommand._unknown || []
 
-  console.log(contextCommand)
-
   let isLocal = contextCommand.target === 'local' ? true : false; 
 
   if (contextCommand.target === 'local') {
@@ -196,6 +194,7 @@ main()
 // ============================================================================================
 // ============================ TELEPOT ASSET - LOCAL =========================================
 // ============================================================================================
+// # Holding Register: 5EYCAe5ijiYgWYWi1fs8Xz1td1djEtJVVnNfzvDRP4VtLL7Y
 
 // $ yarn dev local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
 
@@ -234,7 +233,7 @@ main()
 
 // $ yarn dev local transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
 
-// ------------------- TRANSFER BALANCE IN A BRIDGE MESSAGE -----------------------------------
+// ------------------- EXECUTE A ENCODED BRIDGE MESSAGE CALL IN TRANSACT ---------------------------
 // # It will be only possible for a UMP, since the Relay Chain is the one who implements the Bridges pallet
 // # For DMP, it would be only possible if the parachain implements the bridge pallet
 // # An alternative can be trying to send a Xcm to HERE, and see if the Relay Chain is able to executed the

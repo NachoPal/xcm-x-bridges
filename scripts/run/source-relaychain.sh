@@ -8,7 +8,7 @@ echo "Source Relaychain start up"
 
 ./bin/polkadot build-spec\
   --disable-default-bootnode\
-  --chain $RUNTIME_SOURCE > ./resources/chain-specs/source.json
+  --chain $RUNTIME_RELAY_SOURCE > ./resources/chain-specs/source.json
 
 ./bin/polkadot build-spec\
   --chain ./resources/chain-specs/source.json\
@@ -19,10 +19,10 @@ echo "Source Relaychain start up"
 RUST_LOG=xcm::send_xcm=trace,nacho=debug
 export RUST_LOG
 
-# start Rococo nodes
+# start Source nodes
 ./bin/polkadot\
   -lerror\
-	--chain=$RUNTIME_SOURCE\
+	--chain=$RUNTIME_RELAY_SOURCE\
 	--alice\
 	--base-path=data/source-alice.db\
   --node-key-file=resources/node-keys/source-alice\
@@ -38,7 +38,7 @@ export RUST_LOG
 
 ./bin/polkadot\
   -lerror\
-	--chain=$RUNTIME_SOURCE\
+	--chain=$RUNTIME_RELAY_SOURCE\
 	--bob\
 	--base-path=data/source-bob.db\
   --node-key-file=resources/node-keys/source-bob\

@@ -6,8 +6,21 @@
 # ###############################################################################
 echo "Target Parachain start up"
 
-./bin/polkadot-collator export-genesis-state --parachain-id 2000 > ./resources/parachains/target-2000-genesis
-./bin/polkadot-collator export-genesis-wasm > ./resources/parachains/target-2000-wasm
+# ./bin/polkadot-collator build-spec\
+#   --disable-default-bootnode\
+#   --chain=$RUNTIME_PARA_TARGET > ./resources/chain-specs/target-parachain.json
+
+# ./bin/polkadot-collator build-spec\
+#   --chain=./resources/chain-specs/target-parachain.json\
+#   --raw\
+#   --disable-default-bootnode > ./resources/chain-specs/target-parachain-raw.json
+
+./bin/polkadot-collator export-genesis-state\
+  --parachain-id 2000\
+  --chain=$RUNTIME_PARA_TARGET > ./resources/parachains/target-2000-genesis
+
+./bin/polkadot-collator export-genesis-wasm\
+  --chain=$RUNTIME_PARA_TARGET > ./resources/parachains/target-2000-wasm
 
 RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor=debug,xcm:pallet-xcm=debug,xcm:currency_adapter=debug
 
@@ -26,6 +39,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   /ip4/127.0.0.1/tcp/30339/p2p/12D3KooWHwYX1uaahRooGfz7DCbRTRTDJq4yCZHrAF68qvipeVRP\
   --reserved-only\
   --execution Native\
+  --chain=$RUNTIME_PARA_TARGET\
   --\
   -lerror\
   --execution Native\
@@ -51,6 +65,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   /ip4/127.0.0.1/tcp/30340/p2p/12D3KooWJH3LSLjLoAzszuPPmJBjwB2VcSC5NZtYurW8ZddfCgrg\
   --reserved-only\
   --execution Native\
+  --chain=$RUNTIME_PARA_TARGET\
   --\
   -lerror\
   --execution Native\

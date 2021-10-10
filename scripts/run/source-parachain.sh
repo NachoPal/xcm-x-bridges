@@ -6,8 +6,21 @@
 ###############################################################################
 echo "Source Parachain start up"
 
-./bin/polkadot-collator export-genesis-state --parachain-id 2000 > ./resources/parachains/source-2000-genesis
-./bin/polkadot-collator export-genesis-wasm > ./resources/parachains/source-2000-wasm
+# ./bin/polkadot-collator build-spec\
+#   --disable-default-bootnode\
+#   --chain=$RUNTIME_PARA_SOURCE > ./resources/chain-specs/source-parachain.json
+
+# ./bin/polkadot-collator build-spec\
+#   --chain=./resources/chain-specs/source-parachain.json\
+#   --raw\
+#   --disable-default-bootnode > ./resources/chain-specs/source-parachain-raw.json
+
+./bin/polkadot-collator export-genesis-state\
+  --parachain-id 2000\
+  --chain=$RUNTIME_PARA_SOURCE > ./resources/parachains/source-2000-genesis
+
+./bin/polkadot-collator export-genesis-wasm\
+  --chain=$RUNTIME_PARA_SOURCE > ./resources/parachains/source-2000-wasm
 
 RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor=debug,xcm:pallet-xcm=debug,xcm:currency_adapter=debug,xcm:barrier=debug,xcm:origin-conversion=debug
 
@@ -26,6 +39,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   /ip4/127.0.0.1/tcp/30335/p2p/12D3KooWMRZp89siXBYKYTgpGAin4UeU2P3inpNTehnRTnU1nhAL\
   --reserved-only\
   --execution Native\
+  --chain=$RUNTIME_PARA_SOURCE\
   --\
   -lerror\
   --execution Native\
@@ -51,6 +65,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   /ip4/127.0.0.1/tcp/30336/p2p/12D3KooWBJ8tpPYqriU9QemyfctXFcQ7nn9Qsavr6PYzxVDu781T\
   --reserved-only\
   --execution Native\
+  --chain=$RUNTIME_PARA_SOURCE\
   --\
   -lerror\
   --execution Native\

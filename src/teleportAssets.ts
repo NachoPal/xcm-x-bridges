@@ -44,8 +44,6 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
       if (isLocal) {
         await (await call).signAndSend(signerAccount, { nonce, era: 0 });
       } else {
-        console.log(target)
-        console.log(origin)
         const targetAccount = target ? await getWallet(target) : undefined;
 
         let message: BridgeData = {

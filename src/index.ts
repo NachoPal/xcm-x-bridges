@@ -149,8 +149,6 @@ const main = async () => {
   const contextCommand = commandLineArgs(contextDefinitions, { argv,  stopAtFirstUnknown: true })
   argv = contextCommand._unknown || []
 
-  console.log(contextCommand)
-
   let isLocal = contextCommand.target === 'local' ? true : false; 
 
   if (contextCommand.target === 'local') {
@@ -196,6 +194,7 @@ main()
 // ============================================================================================
 // ============================ TELEPOT ASSET - LOCAL =========================================
 // ============================================================================================
+// # Holding Account: 5EYCAe5ijiYgWYWi1fs8Xz1td1djEtJVVnNfzvDRP4VtLL7Y
 
 // $ yarn dev local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
 

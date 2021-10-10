@@ -8,7 +8,7 @@ echo "Target Relaychain start up"
 
 ./bin/polkadot build-spec\
   --disable-default-bootnode\
-  --chain $RUNTIME_TARGET > ./resources/chain-specs/target.json
+  --chain $RUNTIME_RELAY_TARGET > ./resources/chain-specs/target.json
 
 ./bin/polkadot build-spec\
   --chain ./resources/chain-specs/target.json\
@@ -19,10 +19,10 @@ echo "Target Relaychain start up"
 RUST_LOG=xcm::send_xcm=trace,nacho=debug
 export RUST_LOG
 
-# start Wococo nodes
+# start Target nodes
 ./bin/polkadot\
   -lerror\
-	--chain=$RUNTIME_TARGET\
+	--chain=$RUNTIME_RELAY_TARGET\
 	--alice\
 	--base-path=data/target-alice.db\
 	--node-key-file=resources/node-keys/target-alice\
@@ -38,7 +38,7 @@ export RUST_LOG
 
 ./bin/polkadot\
   -lerror\
-	--chain=$RUNTIME_TARGET\
+	--chain=$RUNTIME_RELAY_TARGET\
 	--bob\
 	--base-path=data/target-bob.db\
   --node-key-file=resources/node-keys/target-bob\

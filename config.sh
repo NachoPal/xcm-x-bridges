@@ -6,8 +6,11 @@ POLKADOT_REPO_PATH=../polkadot
 PARACHAIN_REPO_PATH=../cumulus
 BRIDGES_REPO_PATH=../parity-bridges-common
 
-RUNTIME_SOURCE=rococo-local
-RUNTIME_TARGET=wococo-local
+RUNTIME_RELAY_SOURCE=rococo-local
+RUNTIME_RELAY_TARGET=wococo-local
+
+RUNTIME_PARA_SOURCE="" #Fallback to Rococo
+RUNTIME_PARA_TARGET="" #Fallback to Rococo
 
 HEADERS_BRIDGE_SOURCE=rococo-to-wococo
 HEADERS_BRIDGE_TARGET=wococo-to-rococo

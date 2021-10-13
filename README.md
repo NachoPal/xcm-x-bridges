@@ -9,22 +9,28 @@
 
 [Destroy](https://github.com/NachoPal/xcm-x-bridges#destroy)
 
-[Messaging](https://github.com/NachoPal/xcm-x-bridges#messaging)
-* [Vertical Message Passing](https://github.com/NachoPal/xcm-x-bridges#vertical-message-passing)
-  - [DMP](https://github.com/NachoPal/xcm-x-bridges#dmp)
-  - [UMP](https://github.com/NachoPal/xcm-x-bridges#ump)
-* [Horizontal Message Passing](https://github.com/NachoPal/xcm-x-bridges#horizontal-message-passing)
+[Local Messaging](https://github.com/NachoPal/xcm-x-bridges#local-messaging)
+
+[Remote Messaging](https://github.com/NachoPal/xcm-x-bridges#remote-messaging)
+
+[Vertical Message Passing](https://github.com/NachoPal/xcm-x-bridges#vertical-message-passing)
+  * [DMP](https://github.com/NachoPal/xcm-x-bridges#dmp)
+    - [Local](https://github.com/NachoPal/xcm-x-bridges#local)
+    - [Remote](https://github.com/NachoPal/xcm-x-bridges#remote)
+  * [UMP](https://github.com/NachoPal/xcm-x-bridges#ump)
+
+[Horizontal Message Passing](https://github.com/NachoPal/xcm-x-bridges#horizontal-message-passing)
 
 [CLI](https://github.com/NachoPal/xcm-x-bridges#cli)
 
 [Samples](https://github.com/NachoPal/xcm-x-bridges#samples)
 * [DMP](https://github.com/NachoPal/xcm-x-bridges#dmp-1)
   - [Teleport Asset](https://github.com/NachoPal/xcm-x-bridges#teleport-asset)
-    - [Local](https://github.com/NachoPal/xcm-x-bridges#local)
-    - [Remote](https://github.com/NachoPal/xcm-x-bridges#remote)
-  - [Transact](https://github.com/NachoPal/xcm-x-bridges#transact)
     - [Local](https://github.com/NachoPal/xcm-x-bridges#local-1)
     - [Remote](https://github.com/NachoPal/xcm-x-bridges#remote-1)
+  - [Transact](https://github.com/NachoPal/xcm-x-bridges#transact)
+    - [Local](https://github.com/NachoPal/xcm-x-bridges#local-2)
+    - [Remote](https://github.com/NachoPal/xcm-x-bridges#remote-2)
 
 # Introduction
 
@@ -77,15 +83,50 @@ To change the Parachains runtimes:
 # Destroy
 `$ ./stop.sh`
 
-# Messaging
+# Local Messaging
 Relay Chains have a few different mechanisms that are responsible for message passing. They can be generally divided on two categories: Horizontal and Vertical. Horizontal Message Passing (HMP) refers to mechanisms that are responsible for exchanging messages between parachains. Vertical Message Passing (VMP) is used for communication between the relay chain and parachains.
+# Remote Messaging
+All previous mechanisms can also be encapsuladed in a bridge message and executed "remotely" in a target context.
 
-## Vertical Message Passing
+![general view](/diagrams/general-view.png)
 
-### DMP
+1.  A bridge message **payload** is formed by:
+    ```javascript
+      const payload = {
+        call          
+        origin        
+        spec_version  
+        weight       
+      }
+    ``` 
+    - `call`: The **encoded call data** of the **XCM** to be executed in the _Target Relay Chain_
+    - `origin`: Defines the Call origin to be used during the dispatch in the _Target Relay Chain_. There are three types:
+      - `SourceAccount`: represents an account without a private key on the target-chain. This account (_Companion Account_) will be generated/derived using the account ID of the sender on the source-chain.
+      - `TargetAccount`: represents an account with a private key on the target-chain. The sender on the source-chain needs to prove ownership of this account by using their target-chain private key to sign a proof.
+      - `SourceRoot`: represents the source-chain's Root account on the target-chain. This origin can only be dispatched on the target chain if the "send message" request was made by the Root origin of the source chain - otherwise the message will fail to be dispatched
+    - `spec_version`: The expected _Target Relay Chain_ runtime version. Message will not be dipatched if it does not match.
+    - `weight`: Weight of the call, declared by the message sender. If it is less than actual static weight, the call is not dispatched.
+2. A `bridgeMessages.sendMessage(laneId, payload, deliveryAndDispatchFee)` extrinsic is signed and sent by an origin in the source context. The bridge message pallet name varies based on the runtime implementation and the name of the _Target Relay Chain_ it is aiming to send the message. For example, for Rococo runtime the pallet name to bridge to Wococo is `bridgeWococoMessages`. Althought the bridge pallets might have different naming, all of them are instances of `pallet_bridge_messages`.
+3. If the Message is accepted, it is stored on-chain in the `OutboundMessages` storage.
+4. The Bridge Message Relayer queries the Messages Outbound Lane from the _Source Relay Chain_ and pass the message over to the Messages Inbound Lane of the _Target Relay Chain_
+5. Finally, the XCM message is picked up from the Inbound Lane and dispatched by the corresponding `pallet_bridge_dispatch` in the Target context.
+
+# Vertical Message Passing
+
+## DMP
+### Local
 Downward Message Passing (DMP) is a mechanism for delivering messages to parachains from the relay chain.
 
-### UMP
+### Remote
+![dmp remote](/diagrams/dmp-remote.png)
+
+1. XCM encoded call and messages payload are generated
+2. Bridge Message is signed and sent with the XCM encoded call as part of its payload
+3. Message is accepted and stored in `OtboundMessages`
+4. The Bridge Message Relayer query the message from the _Source Relay Chain_ Outbound Lane and pass it over the _Target Relay Chain_
+5. The XCM enconded call is dispatched in the _Target Relay Chain_
+
+## UMP
 Upward Message Passing (UMP) is a mechanism responsible for delivering messages in the opposite direction: from a parachain up to the relay chain.
 
 ## Horizontal Message Passing
@@ -109,10 +150,6 @@ A Comand Line Interface is available to run the samples. The command has the fol
     - `-l`: bridge message lane | `0x00000000` (Default)
     - `-f`: fee | `10000000000000` (Default)
     - `-o`: origin | `SourceAccount` (Default)
-      - `SourceAccount`: represents an account without a private key on the target-chain. This account will be generated/derived using the account ID of the sender on the source-chain
-      - `TargetAccount`: represents an account with a private key on the target-chain. The sender on the source-chain needs to prove ownership of this account by using their target-chain private key to sign a proof.
-      - `SourceRoot`: represents the source-chain's Root account on the target-chain. This origin can only be dispatched on the target chain if the "send message" request was made by the Root origin of the source chain - otherwise the message will fail to be dispatched
-
 * `XCM`: XCM instruction type. All instructions but `teleport-asset` will fallback to the `send()` dispatchable from the `xcmPallet`
   - `teleport-asset`: call to the `teleportAsset()` dispatachable call from the `xcmPallet`
     - `-p`: parachain ID destiantion | `2000` (Default)
@@ -139,8 +176,16 @@ A Comand Line Interface is available to run the samples. The command has the fol
 #### Local
 
 ```
-$ yarn dev dmp local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+yarn dev dmp local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
 ```
+
+![dmp local teleport](/diagrams/dmp-local-teleport-asset.png)
+
+1. _Alice_ signs and sends a `xcmPallet.teleportAssets(destination, beneficiary, assets, destWeight)` extrinsic
+2. A `WithdrawAsset` XCM is executed `Asset` amount is withdrawn from _Alice_ and deposited in the _Holding Registry_
+3. A `InitiateTeleport` XCM with two effects (`BuyExecution` and `DepositAsset`) is stored in the Relay Chain storage
+4. The XCM is read from the Relay Chain storage by the Parachain Full Node
+5. `InitiateTeleport` is executed, `Asset` amount is minted and deposited in _Bob's_ account.
 
 #### Remote
 
@@ -170,7 +215,19 @@ The encoded `Call` that `Transact` instruction will dispatch is `0x1e00008eaf041
 $ yarn dev dmp local transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
 ```
 
-NOTE: Sending a `Transact` with a encoded `bridgeWococoMessages.sendMessage()` dispatch is not possible as the bridge pallet is only implemented in the _Parachain_. Therefore, DMP messages are not possible. Only a UMP or HMP would work. The alternative would be to try to send a `Transact` with destination `Here` instead of the Parachain.
+![dmp local transact](/diagrams/dmp-local-transact.png)
+
+1. The encoded call `balance.transfer(dest, value)` to be executed by the `Transact` XCM is generated.
+2. The `Transact` XCM is formed with `originType = SovereignAccount`
+      ```javascript
+        const xcm = { Transact: { originType, requireWeightAtMost, encodedCall } }
+      ```
+3. _Alice_ signs and send the extrinsic `sudo.sudo(api.tx.xcmPallet.send(destination, xcm))`
+4. The `Transact` XCM is stored in the Relay Chain
+5. The XCM is read from the Relay Chain storage by the Parachain Full Node
+6. The encoded call in the `Transact` XCM is executed in the Parachain by its Sovereign Account, transfering the balance value to _Bob_
+
+**NOTE**: Sending a `Transact` with a encoded `bridgeWococoMessages.sendMessage()` dispatch is not possible as the bridge pallet is only implemented in the _Parachain_. Therefore, DMP messages are not possible. Only a UMP or HMP would work. The alternative would be to try to send a `Transact` with destination `Here` instead of the Parachain.
 #### Remote
 
 * `SourceAccount`:

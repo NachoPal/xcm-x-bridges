@@ -194,14 +194,14 @@ The Xcm is executed by the _Companion Account_ in the target _Relay Chain_.
 Therefore, the _Companion Account_ should have some balance (1K at least for the following sample). `//Alice` _Companion Account_ in Wococo is: `5GfixJndjo7RuMeaVGJFXiDBQogCHyhxKgGaBkjs6hj15smD`
 
                 
-      $ yarn dev dmp remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+      yarn dev dmp remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
                 
 
 * `TargetAccount`:
 The Xcm is executed by an owned account in the target _Relay Chain_
 
                 
-      $ yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+      yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
                 
 
 ### Transact
@@ -212,7 +212,7 @@ Thus, the source _Sovereign Account_, `5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eS
 The encoded `Call` that `Transact` instruction will dispatch is `0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03` and corresponds to `balance.transfer()` of 1k to `//Bob`
 
 ```
-$ yarn dev dmp local transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+yarn dev dmp local transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
 ```
 
 ![dmp local transact](/diagrams/dmp-local-transact.png)
@@ -237,5 +237,5 @@ This case is not possible because a `Transact` XCM can only be executed by Root.
 The Root Account private key of the target key should be know to be able to use this option. The _Sovereign Account_ `5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM` of the target _Parachain_ should have some balance.
 
                 
-      $ yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+      yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
                 

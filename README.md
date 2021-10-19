@@ -182,7 +182,7 @@ yarn dev dmp local teleport-asset -s //Alice -p 2000 -b //Bob -a 100000000000000
 ![dmp local teleport](/diagrams/dmp-local-teleport-asset.png)
 
 1. _Alice_ signs and sends a `xcmPallet.teleportAssets(destination, beneficiary, assets, destWeight)` extrinsic
-2. A `WithdrawAsset` XCM is executed `Asset` amount is withdrawn from _Alice_ and deposited in the _Holding Registry_
+2. A `WithdrawAsset` XCM is executed `Asset` amount is withdrawn from _Alice_ and deposited in the _Check Account_
 3. A `InitiateTeleport` XCM with two effects (`BuyExecution` and `DepositAsset`) is stored in the Relay Chain storage
 4. The XCM is read from the Relay Chain storage by the Parachain Full Node
 5. `InitiateTeleport` is executed, `Asset` amount is minted and deposited in _Bob's_ account.

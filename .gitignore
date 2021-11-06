@@ -6,3 +6,4 @@ temp
 resources/parachains
 resources/chain-specs
 node_modules
+.vscode

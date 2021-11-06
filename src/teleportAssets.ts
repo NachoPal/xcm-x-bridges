@@ -14,7 +14,7 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
           signer,
           beneficiary,
           amount,
-          destWeight
+          feeAssetItem
         },
         bridgeData: {
           relayChains,
@@ -31,14 +31,14 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
     
       const signerAccount = await getWallet(signer);
       const beneficiaryAccount = await getWallet(beneficiary);
-
     
       let beneficiaryObj = {
-        x1: { accountId32: { network: { any: true }, id: beneficiaryAccount.address }}
+        v1: { parents: 0, interior: { x1: { accountId32: { network: { any: true }, id: beneficiaryAccount.addressRaw }}}}
       }
-      let assets = [{ concreteFungible: { here: true, amount }}]
+      // let assets = { v1: [{ concreteFungible: { here: true, amount }}]}
+      let assets = { v1: [{id: { concrete: { parents: 0, interior: { here: true }}}, fun: { fungible: amount }}]}
     
-      let call = api.tx.xcmPallet.teleportAssets(destination, beneficiaryObj, assets, destWeight)
+      let call = api.tx.xcmPallet.teleportAssets(destination, beneficiaryObj, assets, feeAssetItem)
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
     
       if (isLocal) {

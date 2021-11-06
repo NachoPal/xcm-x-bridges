@@ -1,3 +1,4 @@
+require('dotenv').config()
 import commandLineArgs from 'command-line-args';
 import connectToRelayChains from './common/connectToRelayChains';
 import { TeleportData, TransactData, Xcm, BridgeData, BridgeOrigin } from './interfaces/xcmData';
@@ -32,7 +33,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
       { name: 'signer', alias: 's', type: String },
       { name: 'beneficiary', alias: 'b', type: String },
       { name: 'amount', alias: 'a', type: String },
-      { name: 'destWeight', alias: 'w', type: String },
+      { name: 'feeAssetItem', alias: 'f', type: String },
       { name: 'parachain', alias: 'p', type: Number }
     ]
     const optionsCommand = commandLineArgs(optionDefinitions, { argv, stopAtFirstUnknown: true });
@@ -41,27 +42,27 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
       optionsCommand.signer &&
       optionsCommand.beneficiary &&
       optionsCommand.amount &&
-      optionsCommand.destWeight &&
+      optionsCommand.feeAssetItem &&
       optionsCommand.parachain
     );
 
     if (!validOptions) {
-      console.log(`Error: -s, -b, -a, -w and -p flags are mandatory for "${subCommand.xcm}"`);
+      console.log(`Error: -s, -b, -a, -f and -p flags are mandatory for "${subCommand.xcm}"`);
       process.exit(1);
     }
 
-    const { signer, beneficiary, parachain, amount, destWeight } = optionsCommand;
+    const { signer, beneficiary, parachain, amount, feeAssetItem } = optionsCommand;
 
     let xcmMessage: TeleportData = {
       type,
       signer,
       beneficiary,
       amount,
-      destWeight
+      feeAssetItem
     }
 
     let xcm: Xcm = {
-      destination: { x1: { parachain }},
+      destination: { v1: { parents: 0, interior: { x1: { parachain }}}},
       message: xcmMessage,
       bridgeData,
     }
@@ -133,7 +134,7 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 }
 
 const main = async () => {
-  const relayChains = await connectToRelayChains(9944, 9948);
+  const relayChains = await connectToRelayChains(process.env.SOURCE_PORT, process.env.TARGET_PORT);
 
   let mainDefinitions = [
     { name: 'messaging', defaultOption: true },
@@ -196,7 +197,9 @@ main()
 // ============================================================================================
 // # Holding Register: 5EYCAe5ijiYgWYWi1fs8Xz1td1djEtJVVnNfzvDRP4VtLL7Y
 
-// $ yarn dev local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+// $ yarn dev dmp local teleport-asset -s //Alice -p 1000 -b //Bob -a 1000000000000000 -f 0
+
+// $ yarn dev ump local teleport-asset -s //Alice -p 1000 -b //Bob -a 1000000000000000 -f 0
 
 // ============================================================================================
 // ============================ TELEPOT ASSET - REMOTE ========================================

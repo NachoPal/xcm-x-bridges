@@ -22,7 +22,7 @@ export type TeleportData = {
   signer: any,
   beneficiary: string,
   amount: string,
-  destWeight: string,
+  feeAssetItem: string,
 }
 export type TransactData = {
   type: "Transact",

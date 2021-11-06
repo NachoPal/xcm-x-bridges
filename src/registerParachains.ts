@@ -25,7 +25,7 @@ const registerParachain = async (api, wallet, id, genesis) => {
 const setupParachain = async (relayChain) => {
   const { uri, api, genesis, wasm, id } = relayChain;
   const wallet = await getWallet(uri);
-  await reserveParachainId(api, wallet);
+  // await reserveParachainId(api, wallet);
 
   const { 
     genesis: genesisHex, 
@@ -42,44 +42,29 @@ const setupParachain = async (relayChain) => {
   await registerParachain(api, wallet, id, genesisArgs);
 }
 
-
-
 const main = async () => {
   const optionDefinitions = [
-    { name: 'port', alias: 'p', type: String, multiple: true },
-    { name: 'uri', alias: 'u', type: String, multiple: true },
-    { name: 'genesis', alias: 'g', type: String, multiple: true },
-    { name: 'wasm', alias: 'w', type: String, multiple: true },
-    { name: 'id', alias: 'i', type: Number, multiple: true }
+    { name: 'port', alias: 'p', type: String },
+    { name: 'uri', alias: 'u', type: String },
+    { name: 'genesis', alias: 'g', type: String },
+    { name: 'wasm', alias: 'w', type: String },
+    { name: 'id', alias: 'i', type: Number }
   ]
   const options = commandLineArgs(optionDefinitions);
   const { port, genesis, wasm, uri, id } = options;
 
-  const relayChains = await connectToRelayChains(port[0], port[1]);
-  const relayChainsArray = [
-    { // source
+  const relayChains = await connectToRelayChains(port, undefined);
+  const relayChain = { // source
       api: relayChains.source.chain.api,
-      uri: uri[0],
-      genesis: genesis[0],
-      wasm: wasm[0],
-      id: id[0]
-    },
-    { // target
-      api: relayChains.target.chain.api,
-      uri: uri[1],
-      genesis: genesis[1],
-      wasm: wasm[1],
-      id: id[1]
-    },
-  ]
+      uri: uri,
+      genesis: genesis,
+      wasm: wasm,
+      id: id
+  }
 
   let parachainPromises: Array<Promise<void>> = [];
 
-  relayChainsArray.forEach((relayChain) => {
-    parachainPromises.push(
-      setupParachain(relayChain)
-    ) 
-  })
+  setupParachain(relayChain)
 
   Promise.all(parachainPromises)
 }

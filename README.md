@@ -156,7 +156,7 @@ A Comand Line Interface is available to run the samples. The command has the fol
     - `-s`: extrinsic signer account (uri or private key) | `//Alice` (Default)
     - `-b`: beneficiary account
     - `-a`: amount to teleport
-    - `-w`: destination weight
+    - `-f`: fee asset item
   - `transact`: `Transact`
     - `-p`: parachain ID destiantion | `2000` (Default)
     - `-s`: extrinsic signer account (uri or private key) | `//Alice` (Default)
@@ -176,7 +176,7 @@ A Comand Line Interface is available to run the samples. The command has the fol
 #### Local
 
 ```
-yarn dev dmp local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+yarn dev dmp local teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -f 0
 ```
 
 ![dmp local teleport](/diagrams/dmp-local-teleport-asset.png)
@@ -194,14 +194,14 @@ The Xcm is executed by the _Companion Account_ in the target _Relay Chain_.
 Therefore, the _Companion Account_ should have some balance (1K at least for the following sample). `//Alice` _Companion Account_ in Wococo is: `5GfixJndjo7RuMeaVGJFXiDBQogCHyhxKgGaBkjs6hj15smD`
 
                 
-      yarn dev dmp remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+      yarn dev dmp remote -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -f 0
                 
 
 * `TargetAccount`:
 The Xcm is executed by an owned account in the target _Relay Chain_
 
                 
-      yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+      yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -f 0
                 
 
 ### Transact

@@ -9,19 +9,25 @@
     "start": "node ./bin/index.js",
     "dev": "ts-node ./src/index.ts",
     "dmp": "ts-node ./src/index.ts dmp",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 10000 -r ts-node/register 'tests/*.ts'",
     "dev:register-parachains": "ts-node ./src/registerParachains.ts",
-    "register-parachains": "node ./bin/src/registerParachains.js"
+    "register-parachains": "node ./bin/src/registerParachains.js",
+    "dev:init-chains": "ts-node ./src/initChains.ts",
+    "init-chains": "node ./bin/src/initChains.js"
   },
   "dependencies": {
-    "@polkadot/api": "^5.8.3",
-    "@polkadot/types": "^5.9.1",
+    "@polkadot/api": "^6.6.1",
     "@polkadot/ui-keyring": "^0.85.3",
-    "@polkadot/util-crypto": "^7.3.1",
     "@types/node": "^16.7.10",
     "command-line-args": "^5.2.0",
+    "dotenv": "^10.0.0",
     "typescript": "^4.4.2"
   },
   "devDependencies": {
-    "ts-node": "^10.2.1"
+    "@types/chai": "^4.2.22",
+    "@types/mocha": "^9.0.0",
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3",
+    "ts-node": "^10.4.0"
   }
 }

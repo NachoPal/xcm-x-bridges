@@ -9,17 +9,9 @@ export async function getConnections(chainsConnections: any) {
     isApiReady: chain1ApiReady
   } = await getApiConnection(connectionDetails1);
 
-  const { 
-    configs: chain2Configs, 
-    api: chain2ApiPromise, 
-    isApiReady: chain2ApiReady
-  } = await getApiConnection(connectionDetails2);
-
   const chainName1 = chain1Configs.chainName;
-  const chainName2 = chain2Configs.chainName;
-  // const apiReady = chain1ApiReady && chain2ApiReady;
-  
-  const connections = {
+
+  let connections = {
     sourceChain: {
       name: chainName1,
       configs: chain1Configs,
@@ -27,14 +19,27 @@ export async function getConnections(chainsConnections: any) {
       isApiReady: chain1ApiReady,
       subscriptions: {}
     },
-    targetChain: {
+    targetChain: {}
+  };
+
+  if (connectionDetails2.provider) {
+    const { 
+      configs: chain2Configs, 
+      api: chain2ApiPromise, 
+      isApiReady: chain2ApiReady
+    } = await getApiConnection(connectionDetails2);
+  
+    const chainName2 = chain2Configs.chainName;
+  
+    const targetChain = {
       name: chainName2,
       configs: chain2Configs,
       api: chain2ApiPromise,
       isApiReady: chain2ApiReady,
       subscriptions: {}
     }
-  };
+    connections.targetChain = targetChain
+  }
 
   return { connections };
 }

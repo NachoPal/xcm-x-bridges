@@ -1,5 +1,4 @@
 #!/bin/bash
-. ./config.sh
 
 ###############################################################################
 ### Source Parachain startup ##################################################
@@ -16,11 +15,11 @@ echo "Source Parachain start up"
 #   --disable-default-bootnode > ./resources/chain-specs/source-parachain-raw.json
 
 ./bin/polkadot-collator export-genesis-state\
-  --parachain-id 2000\
-  --chain=$RUNTIME_PARA_SOURCE > ./resources/parachains/source-2000-genesis
+  --parachain-id $PARA_ID_SOURCE\
+  --chain=$RUNTIME_PARA_SOURCE > ./resources/parachains/source-genesis
 
 ./bin/polkadot-collator export-genesis-wasm\
-  --chain=$RUNTIME_PARA_SOURCE > ./resources/parachains/source-2000-wasm
+  --chain=$RUNTIME_PARA_SOURCE > ./resources/parachains/source-wasm
 
 RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor=debug,xcm:pallet-xcm=debug,xcm:currency_adapter=debug,xcm:barrier=debug,xcm:origin-conversion=debug
 
@@ -30,7 +29,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   --alice\
   --collator\
   --force-authoring\
-  --parachain-id 2000\
+  --parachain-id $PARA_ID_SOURCE\
   --base-path=data/source-parachain-collator-1.db\
   --port 40333\
   --ws-port 8844\
@@ -56,7 +55,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   --bob\
   --collator\
   --force-authoring\
-  --parachain-id 2000\
+  --parachain-id $PARA_ID_SOURCE\
   --base-path=data/source-parachain-collator-2.db\
   --port 40334\
   --ws-port 8845\

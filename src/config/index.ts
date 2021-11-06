@@ -15,7 +15,7 @@ const getProviderInfo = (providerPort: string, types: ApiOptions['types']) => {
 
 export const substrateProviders = (sourceChainPort, targetChainPort) => {
   const sourceChain = getProviderInfo(sourceChainPort, rococoTypes);
-  const targetChain = getProviderInfo(targetChainPort, wococoTypes);
+  const targetChain = targetChainPort ? getProviderInfo(targetChainPort, wococoTypes) : undefined;
 
   return [
     {
@@ -24,9 +24,9 @@ export const substrateProviders = (sourceChainPort, targetChainPort) => {
       provider: sourceChain.provider
     },
     {
-      hasher: targetChain.hasher,
-      types: targetChain.types,
-      provider: targetChain.provider
+      hasher: targetChain?.hasher,
+      types: targetChain?.types,
+      provider: targetChain?.provider
     }
   ];
 };

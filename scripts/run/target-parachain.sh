@@ -1,5 +1,4 @@
 #!/bin/bash
-. ./config.sh
 
 # ###############################################################################
 # ### Target Parachain startup ##################################################
@@ -16,11 +15,11 @@ echo "Target Parachain start up"
 #   --disable-default-bootnode > ./resources/chain-specs/target-parachain-raw.json
 
 ./bin/polkadot-collator export-genesis-state\
-  --parachain-id 2000\
-  --chain=$RUNTIME_PARA_TARGET > ./resources/parachains/target-2000-genesis
+  --parachain-id $PARA_ID_SOURCE\
+  --chain=$RUNTIME_PARA_TARGET > ./resources/parachains/target-genesis
 
 ./bin/polkadot-collator export-genesis-wasm\
-  --chain=$RUNTIME_PARA_TARGET > ./resources/parachains/target-2000-wasm
+  --chain=$RUNTIME_PARA_TARGET > ./resources/parachains/target-wasm
 
 RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor=debug,xcm:pallet-xcm=debug,xcm:currency_adapter=debug
 
@@ -30,7 +29,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   --alice\
   --collator\
   --force-authoring\
-  --parachain-id 2000\
+  --parachain-id $PARA_ID_SOURCE\
   --base-path=data/target-parachain-collator-1.db\
   --port 40335\
   --ws-port 8846\
@@ -56,7 +55,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   --bob\
   --collator\
   --force-authoring\
-  --parachain-id 2000\
+  --parachain-id $PARA_ID_SOURCE\
   --base-path=data/target-parachain-collator-2.db\
   --port 40336\
   --ws-port 8847\

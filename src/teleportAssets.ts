@@ -4,6 +4,7 @@ import { OnReadOpts } from 'net';
 import { getApisFromRelays } from './common/getApisFromRelays';
 import getWallet from './common/getWallet';
 import { sendMessage } from './common/sendMessage';
+import { signAndSendCallback } from './common/signAndSendCallback';
 import { BridgeData, Xcm } from './interfaces/xcmData';
 
 export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) => {
@@ -54,16 +55,11 @@ export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLoc
       // let assets = { v1: [{ concreteFungible: { here: true, amount }}]}
       let assets = { v1: [{id: { concrete: { parents, interior: { here: true }}}, fun: { fungible: amount }}]}
 
-      console.log("DESTINATION ", destination)
-      console.log("BENEFICIARY ", beneficiaryObj)
-      console.log("ASSETS ", assets.v1[0].id)
-      console.log("ASSETS ", assets.v1[0].fun)
-
       let call = api.tx[palletName].limitedTeleportAssets(destination, beneficiaryObj, assets, feeAssetItem, { unlimited: true })
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
     
       if (isLocal) {
-        await (await call).signAndSend(signerAccount, { nonce, era: 0 });
+        await (await call).signAndSend(signerAccount, { nonce, era: 0 }, signAndSendCallback());
       } else {
         const targetAccount = target ? await getWallet(target) : undefined;
 
@@ -78,7 +74,7 @@ export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLoc
         await sendMessage(relayChains, message)
       }  
     
-      console.log("Assets Teleported")
-      process.exit(0)
+      // console.log("Assets Teleported")
+      // process.exit(0)
   }
 }

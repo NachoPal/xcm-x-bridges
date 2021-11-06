@@ -5,20 +5,39 @@ const { exec } = require("child_process");
 describe('Teleport Assets', () => {
   describe('DMP', () => {
     it('should teleport assets from Relay Chain to Parachain', (done) => {
-      exec("yarn dev dmp local teleport-asset -s //Alice -p 1000 -b //Bob -a 1000000000000 -f 0", (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: ${error.message}`);
+      exec("yarn dev dmp local teleport-asset -s //Alice -p 1000 -b //Bob -a 1000000000000000 -f 0", (error, stdout, stderr) => {
+        // if (error) {
+        //     console.log(`error: ${error.message}`);
+        //     done()
+        // } 
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
             done()
+        } else if (stdout) {
+          console.log(`stdout: ${stdout}`);
+          done()
+        }
+
+        // equal(true, true); 
+      });  
+    });
+    
+  });
+  describe('UMP', () => {
+    it('should teleport assets from Parachain to Relay Chain', (done) => {
+      exec("yarn dev ump local teleport-asset -s //Bob -p 1000 -b //Alice -a 1000000000000000 -f 0", (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          done()
         } 
         else if (stderr) {
             console.log(`stderr: ${stderr}`);
             // done()
         }
         console.log(`stdout: ${stdout}`);
-        
+        done()
         // equal(true, true); 
       });  
-    });
-    
+    })  
   });
 });

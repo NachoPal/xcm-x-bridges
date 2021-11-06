@@ -1,31 +1,47 @@
 // import commandLineArgs from 'command-line-args';
 // import connectToRelayChains from './common/connectToRelayChains';
+import { OnReadOpts } from 'net';
 import { getApisFromRelays } from './common/getApisFromRelays';
 import getWallet from './common/getWallet';
 import { sendMessage } from './common/sendMessage';
 import { BridgeData, Xcm } from './interfaces/xcmData';
 
-export const teleportAsset = async (xcm: Xcm, isLocal) => {
+export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {
     case "TeleportAsset":
       const { 
-        destination,
         message: {
+          messaging,
+          parachain,
           signer,
           beneficiary,
           amount,
           feeAssetItem
         },
         bridgeData: {
-          relayChains,
           lane,
           fee,
           target,
           origin
         }
       } = xcm;
-    
-      const { sourceApi, targetApi } = getApisFromRelays(relayChains);
+
+      let destination = {};
+      // Default are DMP values
+      let chains = relayChains
+      let palletName = 'xcmPallet';
+      let parents = 0
+
+      if (messaging === 'dmp') {   
+        destination = { v1: { parents, interior: { x1: { parachain }}}}
+      } else if (messaging === 'ump') {
+        parents = 1;
+        chains = paraChains
+        palletName = "polkadotXcm"
+        destination = { v1: { parents, interior: { here: true }}}
+      }
+
+      const { sourceApi, targetApi } = getApisFromRelays(chains);
     
       let api = isLocal ? sourceApi : targetApi;
     
@@ -36,9 +52,14 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
         v1: { parents: 0, interior: { x1: { accountId32: { network: { any: true }, id: beneficiaryAccount.addressRaw }}}}
       }
       // let assets = { v1: [{ concreteFungible: { here: true, amount }}]}
-      let assets = { v1: [{id: { concrete: { parents: 0, interior: { here: true }}}, fun: { fungible: amount }}]}
-    
-      let call = api.tx.xcmPallet.teleportAssets(destination, beneficiaryObj, assets, feeAssetItem)
+      let assets = { v1: [{id: { concrete: { parents, interior: { here: true }}}, fun: { fungible: amount }}]}
+
+      console.log("DESTINATION ", destination)
+      console.log("BENEFICIARY ", beneficiaryObj)
+      console.log("ASSETS ", assets.v1[0].id)
+      console.log("ASSETS ", assets.v1[0].fun)
+
+      let call = api.tx[palletName].limitedTeleportAssets(destination, beneficiaryObj, assets, feeAssetItem, { unlimited: true })
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
     
       if (isLocal) {
@@ -47,7 +68,6 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
         const targetAccount = target ? await getWallet(target) : undefined;
 
         let message: BridgeData = {
-          relayChains,
           signer: signerAccount,
           fee,
           lane,
@@ -55,7 +75,7 @@ export const teleportAsset = async (xcm: Xcm, isLocal) => {
           origin,
           target: targetAccount
         }
-        await sendMessage(message)
+        await sendMessage(relayChains, message)
       }  
     
       console.log("Assets Teleported")

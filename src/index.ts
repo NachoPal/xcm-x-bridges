@@ -5,7 +5,7 @@ import { TeleportData, TransactData, Xcm, BridgeData, BridgeOrigin } from './int
 import { teleportAsset } from './teleportAssets';
 import { sendXcm } from './sendXcm';
 
-const subCommands = async (isLocal, targetCommands, relayChains) => {
+const subCommands = async (messaging, isLocal, targetCommands, chains) => {
   let argv = targetCommands._unknown || []
 
   let subDefinitions = [
@@ -17,7 +17,6 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
   let origin: BridgeOrigin = { type: targetCommands?.bridgeOrigin }
 
   let bridgeData: BridgeData = {
-    relayChains,
     signer: targetCommands?.signer,
     fee: targetCommands?.fee,
     lane: targetCommands?.lane,
@@ -55,6 +54,8 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 
     let xcmMessage: TeleportData = {
       type,
+      messaging,
+      parachain,
       signer,
       beneficiary,
       amount,
@@ -62,12 +63,11 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     }
 
     let xcm: Xcm = {
-      destination: { v1: { parents: 0, interior: { x1: { parachain }}}},
       message: xcmMessage,
       bridgeData,
     }
 
-    await teleportAsset(xcm, isLocal)
+    await teleportAsset(chains, xcm, isLocal)
 
   } else if (subCommand.xcm === 'transact') {
     let type: "Transact" = "Transact";
@@ -112,6 +112,8 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 
     let xcmMessage: TransactData = {
       type,
+      messaging,
+      parachain,
       signer,
       originType,
       requireWeightAtMost,
@@ -119,12 +121,11 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
     }
 
     let xcm: Xcm = {
-      destination: { x1: { parachain }},
       message: xcmMessage,
       bridgeData,
     }
 
-    await sendXcm(xcm, isLocal)
+    await sendXcm(chains, xcm, isLocal)
 
   } else {
 
@@ -134,15 +135,16 @@ const subCommands = async (isLocal, targetCommands, relayChains) => {
 }
 
 const main = async () => {
-  const relayChains = await connectToRelayChains(process.env.SOURCE_PORT, process.env.TARGET_PORT);
+  const relayChains = await connectToRelayChains(process.env.PORT_SOURCE, process.env.PORT_TARGET);
+  const paraChains = await connectToRelayChains(process.env.PORT_PARA_SOURCE, process.env.PORT_PARA_TARGET);
 
   let mainDefinitions = [
     { name: 'messaging', defaultOption: true },
   ]
-  const mainCommand = commandLineArgs(mainDefinitions, { stopAtFirstUnknown: true })
-  let argv = mainCommand._unknown || []
+  const messagingCommand = commandLineArgs(mainDefinitions, { stopAtFirstUnknown: true })
+  let argv = messagingCommand._unknown || []
 
-  // console.log(mainCommand.messaging)
+  let messaging = messagingCommand.messaging;
 
   let contextDefinitions = [
     { name: 'target', defaultOption: true },
@@ -153,7 +155,7 @@ const main = async () => {
   let isLocal = contextCommand.target === 'local' ? true : false; 
 
   if (contextCommand.target === 'local') {
-    await subCommands(isLocal, contextCommand, relayChains)
+    await subCommands(messaging, isLocal, contextCommand, { relayChains, paraChains })
 
   } else if (contextCommand.target === 'remote') {
     let targetDefinitions = [
@@ -183,7 +185,7 @@ const main = async () => {
       process.exit(1);
     }
 
-    await subCommands(isLocal, targetCommand, relayChains)
+    await subCommands(messaging, isLocal, targetCommand, { relayChains, paraChains })
   } else {
     console.log('Error: Invalid target, only "local" or "remote" are valid');
     process.exit(1);
@@ -199,7 +201,7 @@ main()
 
 // $ yarn dev dmp local teleport-asset -s //Alice -p 1000 -b //Bob -a 1000000000000000 -f 0
 
-// $ yarn dev ump local teleport-asset -s //Alice -p 1000 -b //Bob -a 1000000000000000 -f 0
+// $ yarn dev ump local teleport-asset -s //Bob -p 1000 -b //Bob -a 1000000000000000 -f 0
 
 // ============================================================================================
 // ============================ TELEPOT ASSET - REMOTE ========================================

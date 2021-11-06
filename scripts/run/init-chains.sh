@@ -14,6 +14,6 @@ echo "Init Chains"
 
 yarn "$dev"init-chains\
   -i $PARA_ID_SOURCE\
-  -p $SOURCE_PORT\
+  -p $PORT_SOURCE\
   -u //Alice \
   -v 2 &> ./logs/init-chains.log&

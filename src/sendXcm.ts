@@ -6,19 +6,19 @@ import { sendMessage } from './common/sendMessage';
 import { Xcm, BridgeData } from './interfaces/xcmData';
 import { hexToU8a, compactAddLength } from '@polkadot/util';
 
-export const sendXcm = async (xcm: Xcm, isLocal) => {
+export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {
     case "Transact":
       const { 
-        destination,
         message: {
           signer,
+          messaging,
+          parachain,
           originType,
           requireWeightAtMost,
           encodedCall,
         },
         bridgeData: {
-          relayChains,
           lane,
           fee,
           target,
@@ -31,6 +31,8 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
       let api = isLocal ? sourceApi : targetApi;
     
       const signerAccount = await getWallet(signer);
+
+      let destination = { x1: { parachain }}
     
       let messageObj = {
         Transact: { originType, requireWeightAtMost, call: compactAddLength(hexToU8a(encodedCall)) }
@@ -45,7 +47,6 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
         const targetAccount = target ? await getWallet(target) : undefined;
 
         let message: BridgeData = {
-          relayChains,
           signer: signerAccount,
           fee,
           lane,
@@ -53,7 +54,7 @@ export const sendXcm = async (xcm: Xcm, isLocal) => {
           origin,
           target: targetAccount
         }
-        await sendMessage(message)
+        await sendMessage(relayChains, message)
       }  
     
       console.log(`${xcm.message.type} Sent`)

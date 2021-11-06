@@ -4,12 +4,11 @@ import { KeyringPair } from "@polkadot/keyring/types";
 type XcmMessage = TeleportData | TransactData
 
 export interface Xcm {
-  destination?: Object,
+  // destination?: Object,
   message: XcmMessage,
   bridgeData: BridgeData
 }
 export interface BridgeData {
-  relayChains: any,
   signer: any,
   fee: string,
   lane: string,
@@ -19,6 +18,8 @@ export interface BridgeData {
 }
 export type TeleportData = {
   type: "TeleportAsset",
+  messaging: "dmp" | "ump",
+  parachain: Number | undefined,
   signer: any,
   beneficiary: string,
   amount: string,
@@ -26,6 +27,8 @@ export type TeleportData = {
 }
 export type TransactData = {
   type: "Transact",
+  messaging: "dmp" | "ump",
+  parachain: Number | undefined,
   signer: any,
   originType: string,
   requireWeightAtMost: string,

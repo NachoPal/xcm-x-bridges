@@ -6,9 +6,8 @@ import { getBridgeId } from './getConfigs';
 import {  } from '@polkadot/util'
 
 
-export const sendMessage = async (message: BridgeData) => {
+export const sendMessage = async (relayChains, message: BridgeData) => {
   const {
-    relayChains,
     fee,
     lane,
     signer,

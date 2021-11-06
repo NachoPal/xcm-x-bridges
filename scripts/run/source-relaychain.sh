@@ -28,7 +28,7 @@ export RUST_LOG
 	--port=30333\
 	--prometheus-port=9615\
 	--rpc-port=9933\
-	--ws-port=$SOURCE_PORT\
+	--ws-port=$PORT_SOURCE\
 	--execution Native\
   --no-mdns\
 	--rpc-cors=all\

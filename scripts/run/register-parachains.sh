@@ -16,7 +16,7 @@ yarn "$dev"register-parachains\
   -g source-genesis\
   -w source-wasm\
   -i $PARA_ID_SOURCE\
-  -p $SOURCE_PORT\
+  -p $PORT_SOURCE\
   -u //Alice &> ./logs/source-register-parachains.log&
 
 if $BRIDGED
@@ -25,6 +25,6 @@ then
   -g target-genesis\
   -w target-wasm\
   -i $PARA_ID_SOURCE\
-  -p $TARGET_PORT\
+  -p $PORT_TARGET\
   -u //Alice &> ./logs/target-register-parachains.log&
 fi

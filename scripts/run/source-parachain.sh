@@ -32,7 +32,7 @@ RUST_LOG=cumulus:dmp-queue=debug,cumulus:parachain-system=debug,xcm:xcm-executor
   --parachain-id $PARA_ID_SOURCE\
   --base-path=data/source-parachain-collator-1.db\
   --port 40333\
-  --ws-port 8844\
+  --ws-port $PORT_PARA_SOURCE\
   --node-key-file=resources/node-keys/source-collator-1\
   --reserved-nodes /ip4/127.0.0.1/tcp/40334/p2p/12D3KooWJQbb7HMWicG7ySMYjeMVDbtdaVBFprSqZjTHU7KaBn4i \
   /ip4/127.0.0.1/tcp/30335/p2p/12D3KooWMRZp89siXBYKYTgpGAin4UeU2P3inpNTehnRTnU1nhAL\

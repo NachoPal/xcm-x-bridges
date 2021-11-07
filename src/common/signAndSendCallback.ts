@@ -1,23 +1,46 @@
+// export const signAndSendCallback = (eventEval) => 
+//   ({ events = [], status }) => {
+//     console.log("Petardoooo")
+//     if (status.isInBlock) {
+//       events.forEach((record: any) => {
+//         const { event: { data, method, section, typeDef }} = record
 
-export const signAndSendCallback = () => 
+//         let evaluator = new eventEval
+//         const { name, lookupName, check } = evaluator
+//         console.log("Petardoooo")
+//         if (name === `${section.toString()}.${method.toString()}`) {
+//           data.forEach((data, index) => {
+//             if (lookupName === typeDef[index].lookupName) {
+//               console.log(data)
+//               process.stdout.write("Holaaaaaaaa")
+//               check(data)()
+//             }
+//           })
+//         }
+//       });
+//       // process.exit(0)
+//     }
+//   }
+
+export const signAndSendCallback = (eventEval) => 
   ({ events = [], status }) => {
+    
     if (status.isInBlock) {
-      events.forEach((result: any) => {
-        const { event: { data, method, section }, phase } = result
-        
-        if (`${section.toString()}.${method.toString()}` === 'xcmPallet.Attempted') {
-          // console.log('\t', phase.toString(), `: ${section.toString()}.${method.toString()}\n`, data.toHuman());
-          let reason = data.toString();
+      
+      events.forEach((record: any) => {
+        const { event: { data, method, section, typeDef }} = record
 
-          if (data[0].isComplete) {
-            process.stdout.write(`xcmPallet.Attempted - OK - ${reason}\n`, () => process.exit(0))
-            process.exit(0)
-          } else {    
-            process.stderr.write(`xcmPallet.Attempted - FAILED - ${reason}\n`, () => process.exit(1))
-          }
+        let evaluator = new eventEval()
+        const { name, lookupName } = evaluator
+
+        if (name === `${section}.${method}`) {
+          data.forEach((data, index) => {
+            if (lookupName === typeDef[index].lookupName) {
+              evaluator.check(data)
+            }
+          })
         }
       });
-      process.exit(0)
+      // process.exit(0)
     }
   }
-

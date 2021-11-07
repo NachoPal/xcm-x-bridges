@@ -1,11 +1,9 @@
-// import commandLineArgs from 'command-line-args';
-// import connectToRelayChains from './common/connectToRelayChains';
-import { OnReadOpts } from 'net';
 import { getApisFromRelays } from './common/getApisFromRelays';
 import getWallet from './common/getWallet';
 import { sendMessage } from './common/sendMessage';
 import { signAndSendCallback } from './common/signAndSendCallback';
 import { BridgeData, Xcm } from './interfaces/xcmData';
+import { xcmPallet, polkadotXcm } from './config/eventsEvals';
 
 export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {
@@ -32,6 +30,7 @@ export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLoc
       let chains = relayChains
       let palletName = 'xcmPallet';
       let parents = 0
+      let eventEval = xcmPallet.Attempted
 
       if (messaging === 'dmp') {   
         destination = { v1: { parents, interior: { x1: { parachain }}}}
@@ -40,6 +39,7 @@ export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLoc
         chains = paraChains
         palletName = "polkadotXcm"
         destination = { v1: { parents, interior: { here: true }}}
+        eventEval = polkadotXcm.Attempted
       }
 
       const { sourceApi, targetApi } = getApisFromRelays(chains);
@@ -52,14 +52,18 @@ export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLoc
       let beneficiaryObj = {
         v1: { parents: 0, interior: { x1: { accountId32: { network: { any: true }, id: beneficiaryAccount.addressRaw }}}}
       }
-      // let assets = { v1: [{ concreteFungible: { here: true, amount }}]}
+
       let assets = { v1: [{id: { concrete: { parents, interior: { here: true }}}, fun: { fungible: amount }}]}
 
       let call = api.tx[palletName].limitedTeleportAssets(destination, beneficiaryObj, assets, feeAssetItem, { unlimited: true })
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
-    
+
       if (isLocal) {
-        await (await call).signAndSend(signerAccount, { nonce, era: 0 }, signAndSendCallback());
+        await (await call).signAndSend(
+          signerAccount, 
+          { nonce, era: 0 }, 
+          signAndSendCallback(eventEval)
+        );
       } else {
         const targetAccount = target ? await getWallet(target) : undefined;
 

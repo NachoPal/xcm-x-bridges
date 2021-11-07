@@ -19,14 +19,14 @@ yarn "$dev"init-chains\
   -u //Alice \
   -v 2 &> ./logs/init-relay-chains.log&
 
-# ###############################################################################
-# ### Init ParaChains #######################################################
-# ###############################################################################
-echo "Init ParaChains"
+# # ###############################################################################
+# # ### Init ParaChains #######################################################
+# # ###############################################################################
+# echo "Init ParaChains"
 
-yarn "$dev"init-chains\
-  -c para\
-  -i $PARA_ID_SOURCE\
-  -p $PORT_PARA_SOURCE\
-  -u //Alice \
-  -v 2 &> ./logs/init-para-chains.log&
+# yarn "$dev"init-chains\
+#   -c para\
+#   -i $PARA_ID_SOURCE\
+#   -p $PORT_PARA_SOURCE\
+#   -u //Alice \
+#   -v 2 &> ./logs/init-para-chains.log&

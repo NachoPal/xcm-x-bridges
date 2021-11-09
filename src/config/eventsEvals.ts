@@ -13,7 +13,6 @@ export const xcmPallet = {
 
       process.stdout.write(`${result}-${this.name}-${reason}\n`, () => {
         callback(); 
-        process.exit(0);
       })
     }
   }
@@ -32,7 +31,6 @@ export const polkadotXcm = {
 
       process.stdout.write(`${result}-${this.name}-${reason}\n`, () => {
         callback(); 
-        process.exit(0);
       })
     }
   }
@@ -49,7 +47,8 @@ export const dmpQueue = {
       let reason = data.toString()
       let result = data.isComplete ? OK : FAIL
 
-      process.stdout.write(`${result}-${this.name}-${reason}\n`, () => { callback() })
+      callback()
+      return `${result}-${this.name}-${reason}`
     }
   }
 }
@@ -65,7 +64,8 @@ export const ump = {
       let reason = data.toString()
       let result = data.isComplete ? OK : FAIL
 
-      process.stdout.write(`${result}-${this.name}-${reason}\n`, () => { callback() })
+      callback()
+      return `${result}-${this.name}-${reason}`
     }
   }
 }

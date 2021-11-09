@@ -68,18 +68,17 @@ describe('Teleport Assets', () => {
       newBalance.toBn().should.be.a.bignumber.that.is.lessThan(expectedBalance)
     })
 
-    it('should increase balance in receiver ParaChain account', async function() {
+    it('should increase balance in receiver Parachain account', async function() {
       // We make sure the balance is updated before testing
       const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
-      await sleep(50000)
+      await sleep(15000)
 
       let newBalance = await getBalance(this.paraSourceApi, RECEIVER_PARA)
 
       newBalance.toBn().should.be.a.bignumber.that.is.greaterThan(this.receiverParaBalance)
     })
-    
   });
 
   describe('UMP', () => {
@@ -103,5 +102,24 @@ describe('Teleport Assets', () => {
       console.log(result)
       chai.assert.equal(eventResultParser(result), OK)
     });
+
+    it('should decrease balance in sender Parachain account equal or greater than amount', async function() {
+      let newBalance = await getBalance(this.paraSourceApi, SENDER_PARA)
+      let expectedBalance = this.senderRelayBalance.toBn().sub(new BN(AMOUNT))
+      
+      newBalance.toBn().should.be.a.bignumber.that.is.lessThan(expectedBalance)
+    })
+
+    it('should increase balance in receiver Relay Chain account', async function() {
+      // We make sure the balance is updated before testing
+      const sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+      await sleep(15000)
+
+      let newBalance = await getBalance(this.relaySourceApi, RECEIVER_RELAY)
+
+      newBalance.toBn().should.be.a.bignumber.that.is.greaterThan(this.receiverRelayBalance)
+    })
   });
 });

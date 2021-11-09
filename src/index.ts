@@ -201,7 +201,7 @@ main()
 
 // $ yarn dev dmp local teleport-asset -s //Alice -p 1000 -b //Bob -a 1000000000000000 -f 0
 
-// $ yarn dev ump local teleport-asset -s //Bob -p 1000 -b //Bob -a 1000000000000000 -f 0
+// $ yarn dev ump local teleport-asset -s //Bob -p 1000 -b //Alice -a 1000000000000000 -f 0
 
 // ============================================================================================
 // ============================ TELEPOT ASSET - REMOTE ========================================

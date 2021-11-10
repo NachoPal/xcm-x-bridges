@@ -195,7 +195,7 @@ const main = async () => {
 main()
 
 // ============================================================================================
-// ============================ TELEPOT ASSET - LOCAL =========================================
+// ============================ TELEPORT ASSET - LOCAL =========================================
 // ============================================================================================
 // # Holding Register: 5EYCAe5ijiYgWYWi1fs8Xz1td1djEtJVVnNfzvDRP4VtLL7Y
 
@@ -204,7 +204,7 @@ main()
 // $ yarn dev ump local teleport-asset -s //Bob -p 1000 -b //Alice -a 1000000000000000 -f 0
 
 // ============================================================================================
-// ============================ TELEPOT ASSET - REMOTE ========================================
+// ============================ TELEPORT ASSET - REMOTE ========================================
 // ============================================================================================
 
 // -------------------------------- SOURCE ORIGIN ---------------------------------------------
@@ -222,7 +222,7 @@ main()
 
 // # TODO: 'origin.sourceAccount' can be changed in the Message Payload, so we could try to use the same account that the Source Chain
 
-// $ yarn dev remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 2000 -b //Bob -a 1000000000000000 -w 100000000000
+// $ yarn dev remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 teleport-asset -s //Alice -p 1000 -b //Bob -a 1000000000000000 -w 100000000000
 
 // ============================================================================================
 // =========================== TRANSACT - LOCAL ===============================================
@@ -233,10 +233,10 @@ main()
 // # Thus, the Sovereign Account should have some balance (1K at least for the following samples)
 
 // ----------------------------- TRANSFER BALANCE ---------------------------------------------
-// # Transact Call -> 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03 ->
+// # Transact Call -> 0x0600008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48070010a5d4e8 ->
 // # in Parachain -> balance.transfer 1k to Bob
 
-// $ yarn dev local transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+// $ yarn dev dmp local transact -s //Alice -p 1000 -t SovereignAccount -w 1000000000 -c 0x0600008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48070010a5d4e8
 
 // ------------------- EXECUTE A ENCODED BRIDGE MESSAGE CALL IN TRANSACT ---------------------------
 // # It will be only possible for a UMP, since the Relay Chain is the one who implements the Bridges pallet
@@ -254,4 +254,4 @@ main()
 //
 // -------------------------------- TARGET ORIGIN ---------------------------------------------
 //
-// $ yarn dev remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
+// $ yarn dev remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 1000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03

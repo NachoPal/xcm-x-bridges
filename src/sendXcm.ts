@@ -5,6 +5,8 @@ import getWallet from './common/getWallet';
 import { sendMessage } from './common/sendMessage';
 import { Xcm, BridgeData } from './interfaces/xcmData';
 import { hexToU8a, compactAddLength } from '@polkadot/util';
+import { xcmPallet, polkadotXcm } from './config/eventsEvals';
+import { signAndSendCallback } from './common/signAndSendCallback';
 
 export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {
@@ -26,23 +28,44 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
         }
       } = xcm;
 
-      const { sourceApi, targetApi } = getApisFromRelays(relayChains);
+      let destination = {};
+      // Default are DMP values
+      let chains = relayChains
+      let palletName = 'xcmPallet';
+      let parents = 0
+      let eventEval = xcmPallet.Attempted
+
+      if (messaging === 'dmp') { 
+        destination = { v1: { parents, interior: { x1: { parachain }}}}
+      } else if (messaging === 'ump') {
+        parents = 1;
+        chains = paraChains
+        palletName = "polkadotXcm"
+        destination = { v1: { parents, interior: { here: true }}}
+        eventEval = polkadotXcm.Attempted
+      }
+
+      const { sourceApi, targetApi } = getApisFromRelays(chains);
 
       let api = isLocal ? sourceApi : targetApi;
     
       const signerAccount = await getWallet(signer);
 
-      let destination = { x1: { parachain }}
+      // let destination = { x1: { parachain }}
     
       let messageObj = {
-        Transact: { originType, requireWeightAtMost, call: compactAddLength(hexToU8a(encodedCall)) }
+        v1: { Transact: { originType, requireWeightAtMost, call: compactAddLength(hexToU8a(encodedCall))}}
       }
-      let call = api.tx.sudo.sudo(api.tx.xcmPallet.send(destination, messageObj))
+      let call = api.tx.sudo.sudo(api.tx[palletName].send(destination, messageObj))
 
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
     
       if (isLocal) {
-        await (await call).signAndSend(signerAccount, { nonce, era: 0 });
+        await (await call).signAndSend(
+          signerAccount, 
+          { nonce, era: 0 },
+          signAndSendCallback(eventEval)
+        );
       } else {
         const targetAccount = target ? await getWallet(target) : undefined;
 

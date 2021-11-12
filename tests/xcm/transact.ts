@@ -1,13 +1,13 @@
 require('dotenv').config()
 const chai = require('chai');
 var should = require('chai').should()
-import { listenToEvent } from "../src/common/listenToEvent";
-import connectToRelayChains from '../src/common/connectToRelayChains';
-import { getApisFromRelays } from '../src/common/getApisFromRelays';
-import { getBalance } from '../src/common/getBalance';
-import { dmpQueue, ump } from '../src/config/eventsEvals';
-import { OK } from '../src/config/constants'
-import { eventResultParser } from "../src/common/eventsResultParser"
+import { listenToEvent } from "../../src/common/listenToEvent";
+import connectToRelayChains from '../../src/common/connectToRelayChains';
+import { getApisFromRelays } from '../../src/common/getApisFromRelays';
+import { getBalance } from '../../src/common/getBalance';
+import { dmpQueue, ump } from '../../src/config/eventsEvals';
+import { OK } from '../../src/config/constants'
+import { eventResultParser } from "../../src/common/eventsResultParser"
 const { exec } = require("child_process");
 const BN = require('bn.js');
 chai.use(require('chai-bn')(BN));
@@ -20,7 +20,7 @@ const SENDER_PARA = "//Alice"
 const RECEIVER_RELAY = "//Bob"
 const ASSET_ID = 0
 
-describe('Teleport Assets', () => {
+describe('Transact', () => {
   
   before(async function() {
     const relayChains = await connectToRelayChains(process.env.PORT_SOURCE, process.env.PORT_TARGET);

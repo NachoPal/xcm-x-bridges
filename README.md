@@ -9,6 +9,8 @@
 
 [Destroy](https://github.com/NachoPal/xcm-x-bridges#destroy)
 
+[Tests](https://github.com/NachoPal/xcm-x-bridges#tests)
+
 [Local Messaging](https://github.com/NachoPal/xcm-x-bridges#local-messaging)
 
 [Remote Messaging](https://github.com/NachoPal/xcm-x-bridges#remote-messaging)
@@ -32,9 +34,12 @@
     - [Local](https://github.com/NachoPal/xcm-x-bridges#local-2)
     - [Remote](https://github.com/NachoPal/xcm-x-bridges#remote-2)
 
+[Contributions](https://github.com/NachoPal/xcm-x-bridges#contributions)
 # Introduction
 
 The goal of this repository is to describe and provide samples of all possible XCM interactions between Parachains, Relay Chains, and also an optional Bridged counterpart context. The samples are written in TypeScript and connect to a locally deployed infra thanks to [Polkadot JS API](https://github.com/polkadot-js/api).
+
+In addition, a set of Integration Test are included under the `./test` folder. The tests are not limited to XCM and they also check functionality from _Common Good_ parachains such as _Statemint/mine_
 
 The necessary infra to run and test the samples can be easily deployed with a single command. This repository depends on:
 - [Polakadot](github.com/paritytech/polkadot) - Relay Chain
@@ -49,39 +54,53 @@ To make sure you are able to successfully run the samples locally, checkout to o
 
 **Release format**:
   ```
-  release-<polkadot/cumulus_version>-<source_para_runtime>_<source_relay_runtime>-<target_relay_runtime>_<target_para_runtime>-<bridges_common_version>
+  release-<parachain_version>-<polkadot_version_relay>-<source_para_runtime>_<source_relay_runtime>-<target_relay_runtime>_<target_para_runtime>-<bridges_common_version>
   ```
-For instance, `release-0.9.10-rococo_rococo-wococo_rococo-0.9` is telling us that the release was tested against the following versions
+For instance, `release-0.9.10-0.9.10-rococo_rococo-wococo_rococo-0.9` is telling us that the release was tested against the following versions
 - **Polkadot**: `release-v0.9.10`
 - **Cumulus**: `polkadot-v0.9.10`
 - **Relay Chain Runtimes**: `rococo-local` and `wococo-local`
 - **Parachains Runtimes**: `rococo-local` and `rococo-local`
 - **Bridges Common**: `v0.9`
 
-There might be cases where a certain runtime is not yet supported by _Bridges Common_, or we just do not want to implement it. Therefore, _Bridges Common_ and a target runtimes are not necessary. For those cases, `release-0.9.10-rococo_rococo` woulde be telling us that the release was tested against the following versions
-- **Polkadot**: `release-v0.9.10`
-- **Cumulus**: `polkadot-v0.9.10`
-- **Relay Chain Runtime**: `rococo-local`
-- **Parachains Runtime**: `rococo-local`
+There might be cases where a certain runtime is not yet supported by _Bridges Common_, or we just do not want to implement it. Therefore, _Bridges Common_ and the target runtimes are not necessary. For those cases, `release-v5-0.9.12-westmint_wested` woulde be telling us that the release was tested against the following versions
+- **Polkadot**: `release-v0.9.12`
+- **Cumulus**: `release-statemine-v5`
+- **Relay Chain Runtime**: `westend-local`
+- **Parachains Runtime**: `westmint-local`
+
+**NOTE**: any reference to _REMOTE MESSAGING_ in this document WILL NOT APPLY for those releases where the bridged counter part is not implemented.
 
 # Set Up
-Unless you want to run the samples against unimplemented runtimes, the default values should be valid and the only variables you should update in `./config.sh` are:
-* `POLKADOT_REPO_PATH`, `PARACHAIN_REPO_PATH` and `BRIDGES_REPO_PATH` point to the directories where the three previously mentioned repositories were cloned. Remember also to checkout the corresponding versions.
+The default values you can find in the `.env` file should be correct. The only variables you have to make sure to update accordingly to your local set up are:
+* `POLKADOT_REPO_PATH`, `PARACHAIN_REPO_PATH` and `BRIDGES_REPO_PATH` should point to the directories where the three previously mentioned repositories were cloned. Remember to checkout the corresponding releases.
 
-To change the Relay Chain runtimes:
-* `RUNTIME_RELAY_SOURCE=<source_relay_runtime>`
-* `RUNTIME_RELAY_TARGET=<target_relay_runtime>`
+In case you want to build your own release in this repository, you might want to modify the following variables:
 
-To change the Parachains runtimes:
-* `RUNTIME_PARA_SOURCE=<source_para_runtime>`
-* `RUNTIME_PARA_TARGET=<target_para_runtime>`
+* To change the Relay Chain runtimes:
+  * `RUNTIME_RELAY_SOURCE`
+  * `RUNTIME_RELAY_TARGET`
+
+* To change the Parachains runtimes:
+  * `RUNTIME_PARA_SOURCE`
+  * `RUNTIME_PARA_TARGET`
+
+* To define if a bridged counterpart is expected:
+  * `BRIDGED` (true/false)
 
 # Deployment
-
 `$ ./start.sh`
 
 # Destroy
 `$ ./stop.sh`
+
+# Tests
+`$ yarn test`
+
+Implemented tests:
+- **xcm**
+  - Teleport Asset (DMP & UMP)
+  - Transact (DMP)
 
 # Local Messaging
 Relay Chains have a few different mechanisms that are responsible for message passing. They can be generally divided on two categories: Horizontal and Vertical. Horizontal Message Passing (HMP) refers to mechanisms that are responsible for exchanging messages between parachains. Vertical Message Passing (VMP) is used for communication between the relay chain and parachains.
@@ -133,7 +152,7 @@ Upward Message Passing (UMP) is a mechanism responsible for delivering messages 
 
 # CLI
 
-A Comand Line Interface is available to run the samples. The command has the following format:
+A Comand Line Interface with the following format is available to run the samples:
 
 ```
   yarn dev <MESSAGING> <TARGET> [OPTIONS] <XCM> [OPTIONS]
@@ -239,3 +258,6 @@ The Root Account private key of the target key should be know to be able to use 
                 
       yarn dev dmp remote -o TargetAccount -t //Alice -f 10000000000000 -l 0x00000000 transact -s //Alice -p 2000 -t SovereignAccount -w 1000000000 -c 0x1e00008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480f0080c6a47e8d03
                 
+# Contributions
+
+PRs and contributions are welcome :)

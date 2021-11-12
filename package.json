@@ -9,7 +9,7 @@
     "start": "node ./bin/index.js",
     "dev": "ts-node ./src/index.ts",
     "dmp": "ts-node ./src/index.ts dmp",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/*.ts'",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/*/*.ts'",
     "dev:register-parachains": "ts-node ./src/registerParachains.ts",
     "register-parachains": "node ./bin/src/registerParachains.js",
     "dev:init-chains": "ts-node ./src/initChains.ts",

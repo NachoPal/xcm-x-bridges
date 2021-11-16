@@ -32,7 +32,7 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
       // Default are DMP values
       let chains = relayChains
       let palletName = 'xcmPallet';
-      let parents = 10
+      let parents = 0
       // let eventEval = xcmPallet.Sent
       let eventEvalSudo = { eventEval: sudo.Sudid, callback: () => {} }
       let eventEvalSent = { eventEval: xcmPallet.Sent, callback: () => { process.exit(0) }}

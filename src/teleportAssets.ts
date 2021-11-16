@@ -30,7 +30,7 @@ export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLoc
       let chains = relayChains
       let palletName = 'xcmPallet';
       let parents = 0
-      let eventEval = xcmPallet.Attempted
+      let eventEvalAttempted = { eventEval: xcmPallet.Attempted, callback: () => {process.exit(0)}}
 
       if (messaging === 'dmp') {   
         destination = { v1: { parents, interior: { x1: { parachain }}}}
@@ -39,7 +39,7 @@ export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLoc
         chains = paraChains
         palletName = "polkadotXcm"
         destination = { v1: { parents, interior: { here: true }}}
-        eventEval = polkadotXcm.Attempted
+        eventEvalAttempted = { eventEval: polkadotXcm.Attempted, callback: () => {process.exit(0)}}
       }
 
       const { sourceApi, targetApi } = getApisFromRelays(chains);
@@ -62,7 +62,7 @@ export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLoc
         await (await call).signAndSend(
           signerAccount, 
           { nonce, era: 0 }, 
-          signAndSendCallback(eventEval)
+          signAndSendCallback([eventEvalAttempted])
         );
       } else {
         const targetAccount = target ? await getWallet(target) : undefined;

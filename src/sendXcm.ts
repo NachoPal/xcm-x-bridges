@@ -44,7 +44,7 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
         chains = paraChains
         palletName = "polkadotXcm"
         destination = { v1: { parents, interior: { here: true }}}
-        eventEvalSent = { eventEval: xcmPallet.Sent, callback: () => { process.exit(0) }}
+        eventEvalSent = { eventEval: polkadotXcm.Sent, callback: () => { process.exit(0) }}
       }
 
       const { sourceApi, targetApi } = getApisFromRelays(chains);

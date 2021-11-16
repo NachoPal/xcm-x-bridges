@@ -4,7 +4,7 @@ var should = require('chai').should()
 import { listenToEvent } from "../../src/common/listenToEvent";
 import { getBalance } from '../../src/common/getBalance';
 import { dmpQueue, ump } from '../../src/config/eventsEvals';
-import { OK, MS_WAIT_FOR_UPDATE } from '../../src/config/constants'
+import { OK,FAIL, MS_WAIT_FOR_UPDATE } from '../../src/config/constants'
 import { eventResultParser } from "../../src/common/eventsResultParser"
 import { beforeConnectToProviders } from "../helpers/beforeConnectToProviders";
 import { sleep } from "../helpers/sleep";
@@ -140,45 +140,40 @@ describe('Send - Transact', () => {
       });
     })
   })
-  // describe('UMP', () => {
-  //   it(
-  //     'should execute successfuly the Outbound XCM in the Parachain', 
-  //     function(done) {
-  //       let a = exec(
-  //         `yarn dev ump local teleport-asset -s ${SENDER_PARA} -p ${PARA_ID} -b ${RECEIVER_RELAY} -a ${AMOUNT} -f ${ASSET_ID}`, 
-  //         (error, stdout, stderr) => {
-  //           if (stdout) {
-  //             console.log(stdout)
-  //             let result = eventResultParser(stdout)
-  //             chai.assert.equal(result, OK)
-  //             done()
-  //           }
-  //       });  
-  //   })
+
+  describe('UMP', () => {
+
+    // xxHash(Test) 0xb422898ac3ef83da3f78bdf77b08a216 + xxHash(set_storage) 0x9a04835360230ca16c5d96970a47e370
+    // Key 0xb422898ac3ef83da3f78bdf77b08a2169a04835360230ca16c5d96970a47e370
+    // Encoded call = 0x00060480b422898ac3ef83da3f78bdf77b08a2169a04835360230ca16c5d96970a47e3701002000000
+
+    before(async function() {
+      // Generate a randome value to store
+      let random = Math.floor((Math.random() * 100) + 1);
+      this.storageValue = numberToHex(random, 32)
+      let call = this.paraSourceApi.tx.system.setStorage([[STORAGE_KEY, this.storageValue]])
+      this.encodedCall = u8aToHex((await call).toU8a().slice(2))
+    })
+
+    it(
+      'should execute successfuly the Outbound XCM in the Parachain', 
+      function(done) {
+        let a = exec(
+          `yarn dev ump local transact -s ${SENDER_RELAY} -p ${PARA_ID} -t Superuser -w ${REQUIRED_WEIGHT_AT_MOST} -c ${this.encodedCall}`, 
+          (error, stdout, stderr) => {
+            if (stdout) {
+              console.log(stdout)
+              let result = eventResultParser(stdout)
+              chai.assert.equal(result, OK)
+              done()
+            }
+        });  
+    })
     
-  //   it('should execute successfuly the Inbound XCM in the Relay Chain', async function() {
-  //     let result = await listenToEvent(this.relaySourceApi, ump.ExecutedUpward)
-  //     console.log(result)
-  //     chai.assert.equal(eventResultParser(result), OK)
-  //   });
-
-  //   it('should decrease balance in sender Parachain account equal or greater than amount', async function() {
-  //     let newBalance = await getBalance(this.paraSourceApi, SENDER_PARA)
-  //     let expectedBalance = this.senderRelayBalance.toBn().sub(new BN(AMOUNT))
-      
-  //     newBalance.toBn().should.be.a.bignumber.that.is.lessThan(expectedBalance)
-  //   })
-
-  //   it('should increase balance in receiver Relay Chain account', async function() {
-  //     // We make sure the balance is updated before testing
-  //     const sleep = (ms) => {
-  //       return new Promise(resolve => setTimeout(resolve, ms));
-  //     }
-  //     await sleep(MS_WAIT_FOR_UPDATE)
-
-  //     let newBalance = await getBalance(this.relaySourceApi, RECEIVER_RELAY)
-
-  //     newBalance.toBn().should.be.a.bignumber.that.is.greaterThan(this.receiverRelayBalance)
-  //   })
-  // });
+    it('should fail the Inbound XCM in the Relay Chain', async function() {
+      let result = await listenToEvent(this.relaySourceApi, ump.ExecutedUpward)
+      console.log(result)
+      chai.assert.equal(result, 'FAIL-ump.ExecutedUpward-{"error":{"barrier":null}}')
+    });
+  });
 });

@@ -77,16 +77,16 @@ export const polkadotXcm = {
   },
   Sent: class Event {
     name = 'polkadotXcm.Sent'
-    lookupName = 'XcmV2TraitsOutcome'
+    lookupName = 'XcmV2Xcm'
     lookupIndex = -1
 
     constructor(){}
 
     check(data, callback = ()=>{}) {
       let reason = data.toString()
-      let result = data.isComplete ? OK : FAIL
+      // let result = data.isComplete ? OK : FAIL
 
-      process.stdout.write(`${result}-${this.name}-${reason}\n`, () => {
+      process.stdout.write(`${OK}-${this.name}-${reason}\n`, () => {
         callback(); 
       })
     }

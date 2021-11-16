@@ -104,8 +104,8 @@ In case you want to build your own release in this repository, you might want to
 
 Implemented tests:
 - **xcm**
-  - Limited Teleport Asset (DMP & UMP)
-  - Transact (DMP)
+  - `$ yarn test:limited-teleport-asset` -> Limited Teleport Asset (DMP & UMP)
+  - `$ yarn test:transact` -> Transact (DMP)
 
 # Local Messaging
 Relay Chains have a few different mechanisms that are responsible for message passing. They can be generally divided on two categories: Horizontal and Vertical. Horizontal Message Passing (HMP) refers to mechanisms that are responsible for exchanging messages between parachains. Vertical Message Passing (VMP) is used for communication between the relay chain and parachains.

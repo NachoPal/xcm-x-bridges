@@ -4,7 +4,7 @@ var should = require('chai').should()
 import { listenToEvent } from "../../src/common/listenToEvent";
 import { getBalance } from '../../src/common/getBalance';
 import { dmpQueue, ump } from '../../src/config/eventsEvals';
-import { OK } from '../../src/config/constants'
+import { OK, MS_WAIT_FOR_UPDATE } from '../../src/config/constants'
 import { eventResultParser } from "../../src/common/eventsResultParser"
 import { beforeConnectToProviders } from "../helpers/beforeConnectToProviders";
 import { sleep } from "../helpers/sleep";
@@ -60,7 +60,7 @@ describe('Limited Teleport Assets', () => {
 
     it('should increase balance in receiver Parachain account', async function() {
       // We make sure the balance is updated before testing
-      await sleep(15000)
+      await sleep(MS_WAIT_FOR_UPDATE)
 
       let newBalance = await getBalance(this.paraSourceApi, this.receiverPara.address)
 
@@ -99,7 +99,7 @@ describe('Limited Teleport Assets', () => {
 
     it('should increase balance in receiver Relay Chain account', async function() {
       // We make sure the balance is updated before testing
-      await sleep(15000)
+      await sleep(MS_WAIT_FOR_UPDATE)
 
       let newBalance = await getBalance(this.relaySourceApi, this.receiverRelay.address)
 

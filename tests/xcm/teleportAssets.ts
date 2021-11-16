@@ -21,23 +21,6 @@ const ASSET_ID = 0
 
 describe('Teleport Assets', () => {
   
-  // before(async function() {
-  //   const relayChains = await connectToRelayChains(process.env.PORT_SOURCE, process.env.PORT_TARGET);
-  //   const paraChains = await connectToRelayChains(process.env.PORT_PARA_SOURCE, process.env.PORT_PARA_TARGET);
-  
-  //   const { sourceApi: relaySourceApi } = getApisFromRelays(relayChains);
-  //   const { sourceApi: paraSourceApi } = getApisFromRelays(paraChains);
-  
-  //   this.paraSourceApi = paraSourceApi
-  //   this.relaySourceApi = relaySourceApi
-  
-  //   this.senderRelayBalance = await getBalance(relaySourceApi, SENDER_RELAY)
-  //   this.receiverParaBalance = await getBalance(paraSourceApi, RECEIVER_PARA)
-  
-  //   this.senderParaBalance = await getBalance(paraSourceApi, SENDER_PARA)
-  //   this.receiverRelayBalance = await getBalance(relaySourceApi, RECEIVER_RELAY)
-  // })
-
   beforeConnectToProviders(
     { 
       relay: { senderRelay: SENDER_RELAY, receiverRelay: RECEIVER_RELAY },
@@ -68,7 +51,7 @@ describe('Teleport Assets', () => {
     });
 
     it('should decrease balance in sender Relay Chain account equal or greater than amount', async function() {
-      let newBalance = await getBalance(this.relaySourceApi, SENDER_RELAY)
+      let newBalance = await getBalance(this.relaySourceApi, this.senderRelay)
       let expectedBalance = this.senderRelayBalance.toBn().sub(new BN(AMOUNT))
       
       newBalance.toBn().should.be.a.bignumber.that.is.lessThan(expectedBalance)
@@ -81,7 +64,7 @@ describe('Teleport Assets', () => {
       }
       await sleep(15000)
 
-      let newBalance = await getBalance(this.paraSourceApi, RECEIVER_PARA)
+      let newBalance = await getBalance(this.paraSourceApi, this.receiverPara)
 
       newBalance.toBn().should.be.a.bignumber.that.is.greaterThan(this.receiverParaBalance)
     })
@@ -110,7 +93,7 @@ describe('Teleport Assets', () => {
     });
 
     it('should decrease balance in sender Parachain account equal or greater than amount', async function() {
-      let newBalance = await getBalance(this.paraSourceApi, SENDER_PARA)
+      let newBalance = await getBalance(this.paraSourceApi, this.senderPara)
       let expectedBalance = this.senderRelayBalance.toBn().sub(new BN(AMOUNT))
       
       newBalance.toBn().should.be.a.bignumber.that.is.lessThan(expectedBalance)
@@ -123,7 +106,7 @@ describe('Teleport Assets', () => {
       }
       await sleep(15000)
 
-      let newBalance = await getBalance(this.relaySourceApi, RECEIVER_RELAY)
+      let newBalance = await getBalance(this.relaySourceApi, this.receiverRelay)
 
       newBalance.toBn().should.be.a.bignumber.that.is.greaterThan(this.receiverRelayBalance)
     })

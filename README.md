@@ -75,6 +75,11 @@ There might be cases where a certain runtime is not yet supported by _Bridges Co
 The default values you can find in the `.env` file should be correct. The only variables you have to make sure to update accordingly to your local set up are:
 * `POLKADOT_REPO_PATH`, `PARACHAIN_REPO_PATH` and `BRIDGES_REPO_PATH` should point to the directories where the three previously mentioned repositories were cloned. Remember to checkout the corresponding releases.
 
+In addition, to avoid long wait times for the Parachain to be onboarded, reduce the session length in the relay chain:
+```
+pub const EPOCH_DURATION_IN_SLOTS: BlockNumber = 10;
+```
+
 In case you want to build your own release in this repository, you might want to modify the following variables:
 
 * To change the Relay Chain runtimes:

@@ -33,7 +33,7 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
       let chains = relayChains
       let palletName = 'xcmPallet';
       let parents = 0
-      let eventEval = xcmPallet.Attempted
+      let eventEval = xcmPallet.Sent
 
       if (messaging === 'dmp') { 
         destination = { v1: { parents, interior: { x1: { parachain }}}}
@@ -42,7 +42,7 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
         chains = paraChains
         palletName = "polkadotXcm"
         destination = { v1: { parents, interior: { here: true }}}
-        eventEval = polkadotXcm.Attempted
+        eventEval = polkadotXcm.Sent
       }
 
       const { sourceApi, targetApi } = getApisFromRelays(chains);
@@ -57,9 +57,10 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
         v1: { Transact: { originType, requireWeightAtMost, call: compactAddLength(hexToU8a(encodedCall))}}
       }
       let call = api.tx.sudo.sudo(api.tx[palletName].send(destination, messageObj))
+      // let call = api.tx[palletName].send(destination, messageObj)
 
       let nonce = await api.rpc.system.accountNextIndex(signerAccount.address);
-    
+
       if (isLocal) {
         await (await call).signAndSend(
           signerAccount, 
@@ -80,7 +81,7 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
         await sendMessage(relayChains, message)
       }  
     
-      console.log(`${xcm.message.type} Sent`)
-      process.exit(0)
+      // console.log(`${xcm.message.type} Sent`)
+      // process.exit(0)
   }    
 }

@@ -15,7 +15,22 @@ export const xcmPallet = {
         callback(); 
       })
     }
-  }
+  },
+  Sent: class Event {
+    name = 'xcmPallet.Sent'
+    lookupName = 'XcmV2Xcm'
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
+      // let result = data.isComplete ? OK : FAIL
+
+      process.stdout.write(`${OK}-${this.name}-${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  },
 }
 
 export const polkadotXcm = {
@@ -33,7 +48,22 @@ export const polkadotXcm = {
         callback(); 
       })
     }
-  }
+  },
+  Sent: class Event {
+    name = 'polkadotXcm.Sent'
+    lookupName = 'XcmV2TraitsOutcome'
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
+      let result = data.isComplete ? OK : FAIL
+
+      process.stdout.write(`${result}-${this.name}-${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  },
 }
 
 export const dmpQueue = {

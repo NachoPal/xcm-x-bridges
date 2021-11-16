@@ -7,24 +7,21 @@ import { dmpQueue, ump } from '../../src/config/eventsEvals';
 import { OK } from '../../src/config/constants'
 import { eventResultParser } from "../../src/common/eventsResultParser"
 import { beforeConnectToProviders } from "../helpers/beforeConnectToProviders";
-import { compactAddLength } from '@polkadot/util';
+import { sleep } from "../helpers/sleep";
 import { u8aToHex } from '@polkadot/util'
-import getWallet from '../../src/common/getWallet';
 const { exec } = require("child_process");
 const BN = require('bn.js');
 chai.use(require('chai-bn')(BN));
 
 const PARA_ID = process.env.PARA_ID_SOURCE
-const AMOUNT = 1000000000000
+const AMOUNT = 1000000000
 const SENDER_RELAY = "//Alice"
-const RECEIVER_PARA = "//Bob"
+const RECEIVER_PARA = "//Charlie"
 const SENDER_PARA = "//Alice"
 const RECEIVER_RELAY = "//Bob"
 const SOVEREIGN_ACCOUNT = "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM"
-// const REQUIRED_WEIGHT_AT_MOST = 1000000000
-const REQUIRED_WEIGHT_AT_MOST = 1
+const REQUIRED_WEIGHT_AT_MOST = 1000000000
 const ORIGIN_TYPE = 'SovereignAccount'
-// const ENCODED_CALL = '0x0600008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48070010a5d4e8'
 
 describe('Send - Transact', () => {
 
@@ -45,25 +42,16 @@ describe('Send - Transact', () => {
     await this.paraSourceApi.tx.balances.transfer(
       SOVEREIGN_ACCOUNT,
       AMOUNT
-      ).signAndSend(this.senderRelay, { nonce });
-
+      ).signAndSend(this.senderRelay, { nonce }, async ({ events = [], status }) => {
+        if (status.isInBlock) {
+          this.sovereignAccountBalance = await getBalance(this.paraSourceApi, SOVEREIGN_ACCOUNT)
+        }
+      });
+    
+    // Call to be dispatch in the Parachain -> Transfer AMOUNT Balance to SENDER_PARA
     let call = this.paraSourceApi.tx.balances.transfer(this.receiverPara.address, AMOUNT)
     this.encodedCall = u8aToHex((await call).toU8a().slice(2))
   })
-
-  // En event Eval solo tengo que buscar xcmPallet.Sent e imprimir el contenido, si fallase,
-  // solo puedo ver el Event sudo.Sudid
-//   Result<Null, SpRuntimeDispatchError>
-// {
-//   Err: {
-//     Module: {
-//       index: 99
-//       error: 0
-//     }
-//   }
-// }
-// Probar sin sudo a ver qiue evento sale
-// 
 
   describe('DMP', () => {
     it(
@@ -81,30 +69,31 @@ describe('Send - Transact', () => {
         });
     });
 
-    // it('should execute successfuly the Inbound XCM in the Parachain', async function() {
-    //   let result = await listenToEvent(this.paraSourceApi, dmpQueue.ExecuteDownward)
-    //   console.log(result)
-    //   chai.assert.equal(eventResultParser(result), OK)
-    // });
+    it('should execute successfuly the Inbound XCM in the Parachain', async function() {
+      let result = await listenToEvent(this.paraSourceApi, dmpQueue.ExecuteDownward)
+      console.log(result)
+      chai.assert.equal(eventResultParser(result), OK)
+    });
 
-    // it('should decrease balance in sender Relay Chain account equal or greater than amount', async function() {
-    //   let newBalance = await getBalance(this.relaySourceApi, SENDER_RELAY)
-    //   let expectedBalance = this.senderRelayBalance.toBn().sub(new BN(AMOUNT))
+    it('should decrease balance in Sovereign Account Parachain account equal to the amount', async function() {
+      // We make sure the balance is updated before testing
+      await sleep(15000)
+
+      let newBalance = await getBalance(this.paraSourceApi, SOVEREIGN_ACCOUNT)
+      let expectedBalance = this.sovereignAccountBalance.toBn().sub(new BN(AMOUNT))
       
-    //   newBalance.toBn().should.be.a.bignumber.that.is.lessThan(expectedBalance)
-    // })
+      newBalance.toBn().should.be.a.bignumber.that.is.eq(expectedBalance)
+    })
 
-    // it('should increase balance in receiver Parachain account', async function() {
-    //   // We make sure the balance is updated before testing
-    //   const sleep = (ms) => {
-    //     return new Promise(resolve => setTimeout(resolve, ms));
-    //   }
-    //   await sleep(15000)
+    it('should increase balance in receiver Parachain account equal to the amount', async function() {
+      // We make sure the balance is updated before testing
+      await sleep(15000)
 
-    //   let newBalance = await getBalance(this.paraSourceApi, RECEIVER_PARA)
+      let newBalance = await getBalance(this.paraSourceApi, this.receiverPara.address)
+      let expectedBalance = this.receiverParaBalance.toBn().add(new BN(AMOUNT))
 
-    //   newBalance.toBn().should.be.a.bignumber.that.is.greaterThan(this.receiverParaBalance)
-    // })
+      newBalance.toBn().should.be.a.bignumber.that.is.eq(expectedBalance)
+    })
   });
 
   // describe('UMP', () => {

@@ -7,6 +7,7 @@ import { dmpQueue, ump } from '../../src/config/eventsEvals';
 import { OK } from '../../src/config/constants'
 import { eventResultParser } from "../../src/common/eventsResultParser"
 import { beforeConnectToProviders } from "../helpers/beforeConnectToProviders";
+import { sleep } from "../helpers/sleep";
 const { exec } = require("child_process");
 const BN = require('bn.js');
 chai.use(require('chai-bn')(BN));
@@ -14,7 +15,7 @@ chai.use(require('chai-bn')(BN));
 const PARA_ID = process.env.PARA_ID_SOURCE
 const AMOUNT = 1000000000000
 const SENDER_RELAY = "//Alice"
-const RECEIVER_PARA = "//Bob"
+const RECEIVER_PARA = "//Charlie"
 const SENDER_PARA = "//Alice"
 const RECEIVER_RELAY = "//Bob"
 const ASSET_ID = 0
@@ -51,7 +52,7 @@ describe('Limited Teleport Assets', () => {
     });
 
     it('should decrease balance in sender Relay Chain account equal or greater than amount', async function() {
-      let newBalance = await getBalance(this.relaySourceApi, this.senderRelay)
+      let newBalance = await getBalance(this.relaySourceApi, this.senderRelay.address)
       let expectedBalance = this.senderRelayBalance.toBn().sub(new BN(AMOUNT))
       
       newBalance.toBn().should.be.a.bignumber.that.is.lessThan(expectedBalance)
@@ -59,12 +60,9 @@ describe('Limited Teleport Assets', () => {
 
     it('should increase balance in receiver Parachain account', async function() {
       // We make sure the balance is updated before testing
-      const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
       await sleep(15000)
 
-      let newBalance = await getBalance(this.paraSourceApi, this.receiverPara)
+      let newBalance = await getBalance(this.paraSourceApi, this.receiverPara.address)
 
       newBalance.toBn().should.be.a.bignumber.that.is.greaterThan(this.receiverParaBalance)
     })
@@ -93,7 +91,7 @@ describe('Limited Teleport Assets', () => {
     });
 
     it('should decrease balance in sender Parachain account equal or greater than amount', async function() {
-      let newBalance = await getBalance(this.paraSourceApi, this.senderPara)
+      let newBalance = await getBalance(this.paraSourceApi, this.senderPara.address)
       let expectedBalance = this.senderRelayBalance.toBn().sub(new BN(AMOUNT))
       
       newBalance.toBn().should.be.a.bignumber.that.is.lessThan(expectedBalance)
@@ -101,12 +99,9 @@ describe('Limited Teleport Assets', () => {
 
     it('should increase balance in receiver Relay Chain account', async function() {
       // We make sure the balance is updated before testing
-      const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
       await sleep(15000)
 
-      let newBalance = await getBalance(this.relaySourceApi, this.receiverRelay)
+      let newBalance = await getBalance(this.relaySourceApi, this.receiverRelay.address)
 
       newBalance.toBn().should.be.a.bignumber.that.is.greaterThan(this.receiverRelayBalance)
     })

@@ -23,11 +23,11 @@ export const beforeConnectToProviders = (
         this.senderPara = await getWallet(senderPara)
         this.receiverPara = await getWallet(receiverPara)
       
-        this.senderRelayBalance = await getBalance(relaySourceApi, this.senderRelay)
-        this.receiverParaBalance = await getBalance(paraSourceApi, this.receiverPara)
+        this.senderRelayBalance = await getBalance(relaySourceApi, this.senderRelay.address)
+        this.receiverParaBalance = await getBalance(paraSourceApi, this.receiverPara.address)
       
-        this.senderParaBalance = await getBalance(paraSourceApi, this.senderPara)
-        this.receiverRelayBalance = await getBalance(relaySourceApi, this.receiverRelay)
+        this.senderParaBalance = await getBalance(paraSourceApi, this.senderPara.address)
+        this.receiverRelayBalance = await getBalance(relaySourceApi, this.receiverRelay.address)
       })
     )
 }

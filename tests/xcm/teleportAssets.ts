@@ -19,7 +19,7 @@ const SENDER_PARA = "//Alice"
 const RECEIVER_RELAY = "//Bob"
 const ASSET_ID = 0
 
-describe('Teleport Assets', () => {
+describe('Limited Teleport Assets', () => {
   
   beforeConnectToProviders(
     { 

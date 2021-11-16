@@ -76,7 +76,7 @@ The default values you can find in the `.env` file should be correct. The only v
 * `POLKADOT_REPO_PATH`, `PARACHAIN_REPO_PATH` and `BRIDGES_REPO_PATH` should point to the directories where the three previously mentioned repositories were cloned. Remember to checkout the corresponding releases.
 
 In addition, to avoid long wait times for the Parachain to be onboarded, reduce the session length in the relay chain:
-```
+```rust
 pub const EPOCH_DURATION_IN_SLOTS: BlockNumber = 10;
 ```
 
@@ -104,7 +104,7 @@ In case you want to build your own release in this repository, you might want to
 
 Implemented tests:
 - **xcm**
-  - Teleport Asset (DMP & UMP)
+  - Limited Teleport Asset (DMP & UMP)
   - Transact (DMP)
 
 # Local Messaging

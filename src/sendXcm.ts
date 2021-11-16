@@ -5,7 +5,7 @@ import getWallet from './common/getWallet';
 import { sendMessage } from './common/sendMessage';
 import { Xcm, BridgeData } from './interfaces/xcmData';
 import { hexToU8a, compactAddLength } from '@polkadot/util';
-import { xcmPallet, polkadotXcm } from './config/eventsEvals';
+import { xcmPallet, polkadotXcm, sudo } from './config/eventsEvals';
 import { signAndSendCallback } from './common/signAndSendCallback';
 
 export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) => {
@@ -32,8 +32,10 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
       // Default are DMP values
       let chains = relayChains
       let palletName = 'xcmPallet';
-      let parents = 0
-      let eventEval = xcmPallet.Sent
+      let parents = 10
+      // let eventEval = xcmPallet.Sent
+      let eventEvalSudo = { eventEval: sudo.Sudid, callback: () => {} }
+      let eventEvalSent = { eventEval: xcmPallet.Sent, callback: () => { process.exit(0) }}
 
       if (messaging === 'dmp') { 
         destination = { v1: { parents, interior: { x1: { parachain }}}}
@@ -42,7 +44,7 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
         chains = paraChains
         palletName = "polkadotXcm"
         destination = { v1: { parents, interior: { here: true }}}
-        eventEval = polkadotXcm.Sent
+        eventEvalSent = { eventEval: xcmPallet.Sent, callback: () => { process.exit(0) }}
       }
 
       const { sourceApi, targetApi } = getApisFromRelays(chains);
@@ -65,7 +67,7 @@ export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) =>
         await (await call).signAndSend(
           signerAccount, 
           { nonce, era: 0 },
-          signAndSendCallback(eventEval)
+          signAndSendCallback([eventEvalSudo, eventEvalSent])
         );
       } else {
         const targetAccount = target ? await getWallet(target) : undefined;

@@ -23,6 +23,69 @@ export const sudo = {
   }
 }
 
+export const assets = {
+  Created: class Event {
+    name = 'assets.Created'
+    lookupName = 'u32'
+    lookupIndex = 4
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
+      // let result = data.isOk ? OK : FAIL
+
+      // if (result === FAIL) {
+      //   callback = () => { process.exit(0) }
+      // }
+
+      process.stdout.write(`${OK}-${this.name}-asset_id: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  },
+  MetadataSet: class Event {
+    name = 'assets.MetadataSet'
+    lookupName = 'Bytes'
+    lookupIndex = 10
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toHuman()
+      // let result = data.isOk ? OK : FAIL
+
+      // if (result === FAIL) {
+      //   callback = () => { process.exit(0) }
+      // }
+
+      process.stdout.write(`${OK}-${this.name}-name: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  },
+  Issued: class Event {
+    name = 'assets.Issued'
+    lookupName = 'u128'
+    lookupIndex = 6
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
+      // let result = data.isOk ? OK : FAIL
+
+      // if (result === FAIL) {
+      //   callback = () => { process.exit(0) }
+      // }
+
+      process.stdout.write(`${OK}-${this.name}-amount: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  }
+}
+
 export const xcmPallet = {
   Attempted: class Event {
     name = 'xcmPallet.Attempted'

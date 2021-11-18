@@ -10,12 +10,20 @@
     "dev": "ts-node ./src/index.ts",
     "dmp": "ts-node ./src/index.ts dmp",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/*/*.ts'",
-    "test:limited-teleport-asset": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/xcm/teleportAssets.ts'",
-    "test:transact": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/xcm/transact.ts'",
+    "test:xcm": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/xcm/*.ts'",
+    "test:xcm:limited-teleport-asset": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/xcm/teleportAssets.ts'",
+    "test:xcm:transact": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/xcm/transact.ts'",
+    "test:assets": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/assets/*.ts'",
     "dev:register-parachains": "ts-node ./src/registerParachains.ts",
     "register-parachains": "node ./bin/src/registerParachains.js",
     "dev:init-chains": "ts-node ./src/initChains.ts",
-    "init-chains": "node ./bin/src/initChains.js"
+    "init-chains": "node ./bin/src/initChains.js",
+    "dev:assets:create": "ts-node ./src/assetsCreate.ts",
+    "assets:create": "node ./bin/src/assetCreate.js",
+    "dev:assets:set-metadata": "ts-node ./src//assetsSetMetadata.ts",
+    "assets:set-metadata": "node ./bin/src/assetsSetMetadata.js",
+    "dev:assets:mint": "ts-node ./src//assetsMint.ts",
+    "assets:mint": "node ./bin/src/assetsMint.js"
   },
   "dependencies": {
     "@polkadot/api": "^6.6.1",

@@ -104,7 +104,7 @@ describe('Send - Transact', () => {
       // Encoded call = 0x00060480b422898ac3ef83da3f78bdf77b08a2169a04835360230ca16c5d96970a47e3701002000000
 
       before(async function() {
-        // Generate a randome value to store
+        // Generate a random value to store
         let random = Math.floor((Math.random() * 100) + 1);
         this.storageValue = numberToHex(random, 32)
         let call = this.paraSourceApi.tx.system.setStorage([[STORAGE_KEY, this.storageValue]])

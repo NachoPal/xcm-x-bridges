@@ -1,12 +1,12 @@
 // import commandLineArgs from 'command-line-args';
 // import connectToRelayChains from './common/connectToRelayChains';
-import { getApisFromRelays } from './common/getApisFromRelays';
-import getWallet from './common/getWallet';
-import { sendMessage } from './common/sendMessage';
-import { Xcm, BridgeData } from './interfaces/xcmData';
+import { getApisFromRelays } from '../../common/getApisFromRelays';
+import getWallet from '../../common/getWallet';
+import { sendMessage } from '../../common/sendMessage';
+import { Xcm, BridgeData } from '../../interfaces/xcmData';
 import { hexToU8a, compactAddLength } from '@polkadot/util';
-import { xcmPallet, polkadotXcm, sudo } from './config/eventsEvals';
-import { signAndSendCallback } from './common/signAndSendCallback';
+import { xcmPallet, polkadotXcm, sudo } from '../../config/eventsEvals';
+import { signAndSendCallback } from '../../common/signAndSendCallback';
 
 export const sendXcm = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {

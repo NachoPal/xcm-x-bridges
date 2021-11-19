@@ -1,6 +1,6 @@
 import commandLineArgs from 'command-line-args';
-import connectToRelayChains from './common/connectToRelayChains';
-import getWallet from './common/getWallet';
+import connectToRelayChains from '../common/connectToRelayChains';
+import getWallet from '../common/getWallet';
 
 
 const forceXcmVersion = async ({ api, location, version, wallet, pallet }) => {

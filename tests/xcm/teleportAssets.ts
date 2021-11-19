@@ -6,8 +6,8 @@ import { getBalance } from '../../src/common/getBalance';
 import { dmpQueue, ump } from '../../src/config/eventsEvals';
 import { OK, MS_WAIT_FOR_UPDATE } from '../../src/config/constants'
 import { eventResultParser } from "../../src/common/eventsResultParser"
-import { beforeConnectToProviders } from "../helpers/beforeConnectToProviders";
-import { sleep } from "../helpers/sleep";
+import { beforeConnectToProviders } from "../../src/common/beforeConnectToProviders";
+import { sleep } from "../../src/common/sleep";
 const { exec } = require("child_process");
 const BN = require('bn.js');
 chai.use(require('chai-bn')(BN));

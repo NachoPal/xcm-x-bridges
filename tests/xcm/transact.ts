@@ -6,8 +6,8 @@ import { getBalance } from '../../src/common/getBalance';
 import { dmpQueue, ump } from '../../src/config/eventsEvals';
 import { OK,FAIL, MS_WAIT_FOR_UPDATE } from '../../src/config/constants'
 import { eventResultParser } from "../../src/common/eventsResultParser"
-import { beforeConnectToProviders } from "../helpers/beforeConnectToProviders";
-import { sleep } from "../helpers/sleep";
+import { beforeConnectToProviders } from "../../src/common/beforeConnectToProviders";
+import { sleep } from "../../src/common/sleep";
 import { u8aToHex, numberToHex } from '@polkadot/util'
 const { exec } = require("child_process");
 const BN = require('bn.js');

@@ -87,6 +87,70 @@ export const assets = {
   }
 }
 
+export const uniques = {
+  Created: class Event {
+    name = 'uniques.Created'
+    lookupName = 'u32'
+    lookupIndex = 4
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
+
+      process.stdout.write(`${OK}-${this.name}-class_id: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  },
+  MetadataSet: class Event {
+    name = 'uniques.MetadataSet'
+    lookupName = 'Bytes'
+    lookupIndex = 10
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toHuman()
+      // let reason = data.toJSON()
+
+      process.stdout.write(`${OK}-${this.name}-name: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  },
+  Issued: class Event {
+    name = 'uniques.Issued'
+    lookupName = 'u32'
+    lookupIndex = 4
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
+
+      process.stdout.write(`${OK}-${this.name}-ids: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  },
+  Transferred: class Event {
+    name = 'uniques.Transferred'
+    lookupName = 'u32'
+    lookupIndex = 4
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
+
+      process.stdout.write(`${OK}-${this.name}-ids: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  }
+}
+
 export const xcmPallet = {
   Attempted: class Event {
     name = 'xcmPallet.Attempted'

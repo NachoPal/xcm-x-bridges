@@ -1,10 +1,10 @@
 require('dotenv').config()
 import commandLineArgs from 'command-line-args';
-import connectToRelayChains from './common/connectToRelayChains';
+import connectToRelayChains from '../../common/connectToRelayChains';
 // import { u8aToHex } from '@polkadot/util'
-import getWallet from './common/getWallet';
-import { signAndSendCallback } from './common/signAndSendCallback';
-import { assets } from './config/eventsEvals';
+import getWallet from '../../common/getWallet';
+import { signAndSendCallback } from '../../common/signAndSendCallback';
+import { assets } from '../../config/eventsEvals';
 
 
 const transferAsset = async ({ api, id, target, amount, wallet }) => {

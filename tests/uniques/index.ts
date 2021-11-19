@@ -1,24 +1,22 @@
 require('dotenv').config()
 const chai = require('chai');
-import { OK, MS_WAIT_FOR_UPDATE } from '../../src/config/constants'
+var should = require('chai').should()
+import { OK } from '../../src/config/constants'
 import { eventResultParser } from "../../src/common/eventsResultParser"
 import { beforeConnectToProviders } from "../../src/common/beforeConnectToProviders";
 const { exec } = require("child_process");
 const BN = require('bn.js');
 chai.use(require('chai-bn')(BN));
 
-const AMOUNT = 1000000000000
 const SENDER_RELAY = "//Alice"
 const RECEIVER_PARA = "//Bob"
 const SENDER_PARA = "//Alice"
 const RECEIVER_RELAY = "//Bob"
-const MIN_BALANCE = 1000
 const ADMIN = '//Charlie'
-const DECIMALS = 12
-const ASSET_NAME = 'NachoCoin'
-const ASSET_SYMBOL = 'NC'
+const UNIQUE_INSTANCE = 1
 
-describe('Assets', () => {
+
+describe('Uniques', () => {
   
   beforeConnectToProviders(
     { 
@@ -28,27 +26,27 @@ describe('Assets', () => {
   )
 
   before(async function () {
-    const getAssetId = async () => {
+    const getClassId = async () => {
       let exists
-      let assetId
+      let classId
 
       do {
-        assetId = Math.floor((Math.random() * 100) + 1);
-        exists = await this.paraSourceApi.query.assets.asset(assetId)
+        classId = Math.floor((Math.random() * 100) + 1);
+        exists = await this.paraSourceApi.query.uniques.class(classId)
       } while (exists.isSome)
       
-      return assetId
+      return classId
     }
 
-    this.assetId = await getAssetId()
+    this.classId = await getClassId()
   })
 
   describe('Create', () => {
     it(
-      'should create the asset',
+      'should create the unique',
       function(done) {
         exec(
-          `yarn dev:assets:create -i ${this.assetId} -a ${ADMIN} -m ${MIN_BALANCE} -s ${ADMIN}`, 
+          `yarn dev:uniques:create -i ${this.classId} -a ${ADMIN} -s ${ADMIN}`, 
           (error, stdout, stderr) => {
             if (stdout) {
               console.log(stdout)
@@ -60,29 +58,29 @@ describe('Assets', () => {
     });
   });
 
-  describe('Set Metadata', () => {
-    it(
-      'should set metadata for asset',
-      function(done) {
-        exec(
-          `yarn dev:assets:set-metadata -i ${this.assetId} -n ${ASSET_NAME} -y ${ASSET_SYMBOL} -d ${DECIMALS} -s ${ADMIN}`, 
-          (error, stdout, stderr) => {
-            if (stdout) {
-              console.log(stdout)
-              let result = eventResultParser(stdout)
-              chai.assert.equal(result, OK)
-              done()
-            }
-        });
-    });
-  });
+  // describe('Set Metadata', () => {
+  //   it(
+  //     'should set metadata',
+  //     function(done) {
+  //       exec(
+  //         `yarn dev:assets:set-metadata -i ${this.assetId} -n ${ASSET_NAME} -y ${ASSET_SYMBOL} -d ${DECIMALS} -s ${SENDER_PARA}`, 
+  //         (error, stdout, stderr) => {
+  //           if (stdout) {
+  //             console.log(stdout)
+  //             let result = eventResultParser(stdout)
+  //             chai.assert.equal(result, OK)
+  //             done()
+  //           }
+  //       });
+  //   });
+  // });
 
   describe('Mint', () => {
     it(
-      'should issue assets',
+      'should issue uniques',
       function(done) {
         exec(
-          `yarn dev:assets:mint -i ${this.assetId} -b ${ADMIN} -a ${AMOUNT} -s ${ADMIN}`, 
+          `yarn dev:uniques:mint -i ${this.classId} -t ${UNIQUE_INSTANCE} -o ${ADMIN} -s ${ADMIN}`, 
           (error, stdout, stderr) => {
             if (stdout) {
               console.log(stdout)
@@ -96,10 +94,10 @@ describe('Assets', () => {
 
   describe('Transfer', () => {
     it(
-      'should transfer assets',
+      'should transfer uniques',
       function(done) {
         exec(
-          `yarn dev:assets:transfer -i ${this.assetId} -t ${RECEIVER_PARA} -a ${AMOUNT} -s ${ADMIN}`, 
+          `yarn dev:uniques:transfer -i ${this.classId} -t ${UNIQUE_INSTANCE} -d ${RECEIVER_PARA} -s ${ADMIN}`, 
           (error, stdout, stderr) => {
             if (stdout) {
               console.log(stdout)

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import commandLineArgs from 'command-line-args';
-import connectToRelayChains from './common/connectToRelayChains';
-import getWallet from './common/getWallet';
+import connectToRelayChains from '../common/connectToRelayChains';
+import getWallet from '../common/getWallet';
 
 const getGenesisAndWasm = (genesisFile: string, wasmFile: string) => {
   const genesis = fs.readFileSync(process.cwd() + "/resources/parachains/" + genesisFile).toString();

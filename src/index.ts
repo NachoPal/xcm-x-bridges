@@ -2,8 +2,8 @@ require('dotenv').config()
 import commandLineArgs from 'command-line-args';
 import connectToRelayChains from './common/connectToRelayChains';
 import { TeleportData, TransactData, Xcm, BridgeData, BridgeOrigin } from './interfaces/xcmData';
-import { teleportAsset } from './teleportAssets';
-import { sendXcm } from './sendXcm';
+import { teleportAsset } from './extrinsics/xcm/teleportAssets';
+import { sendXcm } from './extrinsics/xcm/sendXcm';
 
 const subCommands = async (messaging, isLocal, targetCommands, chains) => {
   let argv = targetCommands._unknown || []
@@ -279,3 +279,21 @@ main()
 // ============================================================================================
 
 // yarn dev:assets:transfer -i 5 -t //Dave -a 1000000000000 -s //Charlie
+
+// ============================================================================================
+// =========================== UNIQUES CREATE =================================================
+// ============================================================================================
+
+// yarn dev:uniques:create -i 5 -a //Charlie -s //Charlie
+
+// ============================================================================================
+// =========================== UNIQUES MINT =================================================
+// ============================================================================================
+
+// yarn dev:uniques:mint -i 5 -t 1 -o //Charlie -s //Charlie
+
+// ============================================================================================
+// =========================== UNIQUES MINT =================================================
+// ============================================================================================
+
+// yarn dev:uniques:transfer -i 5 -t 1 -d //Alice -s //Charlie

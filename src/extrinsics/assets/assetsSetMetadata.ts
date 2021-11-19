@@ -1,13 +1,13 @@
 require('dotenv').config()
 import commandLineArgs from 'command-line-args';
-import connectToRelayChains from './common/connectToRelayChains';
+import connectToRelayChains from '../../common/connectToRelayChains';
 // import { u8aToHex } from '@polkadot/util'
-import getWallet from './common/getWallet';
-import { signAndSendCallback } from './common/signAndSendCallback';
-import { assets } from './config/eventsEvals';
+import getWallet from '../../common/getWallet';
+import { signAndSendCallback } from '../../common/signAndSendCallback';
+import { assets } from '../../config/eventsEvals';
 
 
-const createAsset = async ({ api, id, name, symbol, decimals, wallet }) => {
+const setMetadataAsset = async ({ api, id, name, symbol, decimals, wallet }) => {
   let nonce = await api.rpc.system.accountNextIndex(wallet.address);
   // console.log(u8aToHex(admin.addressRaw))
   // let adminObj = { Id: admin.address }
@@ -44,7 +44,7 @@ const main = async () => {
     wallet: await getWallet(signer)
   }
 
-  await createAsset(data)  
+  await setMetadataAsset(data)  
 }
 
 main()

@@ -1,9 +1,9 @@
-import { getApisFromRelays } from './common/getApisFromRelays';
-import getWallet from './common/getWallet';
-import { sendMessage } from './common/sendMessage';
-import { signAndSendCallback } from './common/signAndSendCallback';
-import { BridgeData, Xcm } from './interfaces/xcmData';
-import { xcmPallet, polkadotXcm } from './config/eventsEvals';
+import { getApisFromRelays } from '../../common/getApisFromRelays';
+import getWallet from '../../common/getWallet';
+import { sendMessage } from '../../common/sendMessage';
+import { signAndSendCallback } from '../../common/signAndSendCallback';
+import { BridgeData, Xcm } from '../../interfaces/xcmData';
+import { xcmPallet, polkadotXcm } from '../../config/eventsEvals';
 
 export const teleportAsset = async ({ relayChains, paraChains }, xcm: Xcm, isLocal) => {
   switch (xcm.message.type) {

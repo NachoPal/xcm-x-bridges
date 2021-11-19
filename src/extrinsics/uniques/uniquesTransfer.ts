@@ -7,7 +7,7 @@ import { signAndSendCallback } from '../../common/signAndSendCallback';
 import { assets, uniques } from '../../config/eventsEvals';
 
 
-const mintUnique = async ({ api, id, instance, dest, wallet }) => {
+const transferUnique = async ({ api, id, instance, dest, wallet }) => {
   let nonce = await api.rpc.system.accountNextIndex(wallet.address);
   // console.log(u8aToHex(admin.addressRaw))
   let destObj = { Id: dest.address }
@@ -42,7 +42,7 @@ const main = async () => {
     wallet: await getWallet(signer)
   }
 
-  await mintUnique(data)  
+  await transferUnique(data)  
 }
 
 main()

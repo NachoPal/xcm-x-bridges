@@ -16,6 +16,8 @@
     "test:assets": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --timeout 100000 -r ts-node/register 'tests/assets/*.ts'",
     "dev:assets:create": "ts-node ./src/extrinsics/assets/assetsCreate.ts",
     "assets:create": "node ./bin/src/extrinsics/assets/assetCreate.js",
+    "dev:assets:force-create": "ts-node ./src/extrinsics/assets/assetsForceCreate.ts",
+    "assets:force-create": "node ./bin/src/extrinsics/assets/assetForceCreate.js",
     "dev:assets:set-metadata": "ts-node ./src/extrinsics/assets/assetsSetMetadata.ts",
     "assets:set-metadata": "node ./bin/src/extrinsics/assets/assetsSetMetadata.js",
     "dev:assets:mint": "ts-node ./src/extrinsics/assets/assetsMint.ts",

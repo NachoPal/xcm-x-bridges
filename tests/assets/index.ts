@@ -17,15 +17,16 @@ const ADMIN = '//Charlie'
 const DECIMALS = 12
 const ASSET_NAME = 'NachoCoin'
 const ASSET_SYMBOL = 'NC'
+const SUDO = "//Alice"
+
+beforeConnectToProviders(
+  { 
+    relay: { senderRelay: SENDER_RELAY, receiverRelay: RECEIVER_RELAY },
+    para: { senderPara: SENDER_PARA, receiverPara: RECEIVER_PARA }
+  }  
+)
 
 describe('Assets', () => {
-  
-  beforeConnectToProviders(
-    { 
-      relay: { senderRelay: SENDER_RELAY, receiverRelay: RECEIVER_RELAY },
-      para: { senderPara: SENDER_PARA, receiverPara: RECEIVER_PARA }
-    }  
-  )
 
   before(async function () {
     const getAssetId = async () => {
@@ -111,3 +112,73 @@ describe('Assets', () => {
     });
   });
 });
+
+describe('Assets Tx Payments', () => {
+
+  before(async function () {
+    const getAssetId = async () => {
+      let exists
+      let assetId
+
+      do {
+        assetId = Math.floor((Math.random() * 100) + 1);
+        exists = await this.paraSourceApi.query.assets.asset(assetId)
+      } while (exists.isSome)
+      
+      return assetId
+    }
+
+    this.assetId = await getAssetId()
+  })
+
+  describe('Force Create', () => {
+    it(
+      'should force create the asset',
+      function(done) {
+        exec(
+          `yarn dev:assets:force-create -i ${this.assetId} -o ${SUDO} -u -m ${MIN_BALANCE} -s ${SUDO}`, 
+          (error, stdout, stderr) => {
+            if (stdout) {
+              console.log(stdout)
+              let result = eventResultParser(stdout)
+              chai.assert.equal(result, OK)
+              done()
+            }
+        });
+    });
+  });
+
+  describe('Mint', () => {
+    it(
+      'should issue assets',
+      function(done) {
+        exec(
+          `yarn dev:assets:mint -i ${this.assetId} -b ${SUDO} -a ${AMOUNT} -s ${SUDO}`, 
+          (error, stdout, stderr) => {
+            if (stdout) {
+              console.log(stdout)
+              let result = eventResultParser(stdout)
+              chai.assert.equal(result, OK)
+              done()
+            }
+        });
+    });
+  });
+
+  describe('Transfer', () => {
+    it(
+      'should transfer assets',
+      function(done) {
+        exec(
+          `yarn dev:assets:transfer -i ${this.assetId} -t ${RECEIVER_PARA} -a ${AMOUNT} -s ${SUDO}`, 
+          (error, stdout, stderr) => {
+            if (stdout) {
+              console.log(stdout)
+              let result = eventResultParser(stdout)
+              chai.assert.equal(result, OK)
+              done()
+            }
+        });
+    });
+  });
+})

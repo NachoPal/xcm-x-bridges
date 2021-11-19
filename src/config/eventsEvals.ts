@@ -84,6 +84,21 @@ export const assets = {
         callback(); 
       })
     }
+  },
+  ForceCreated: class Event {
+    name = 'assets.ForceCreated'
+    lookupName = 'u32'
+    lookupIndex = 4
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
+
+      process.stdout.write(`${OK}-${this.name}-asset_id: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
   }
 }
 

@@ -100,6 +100,23 @@ describe('Assets', () => {
         });
     });
   });
+
+  describe('Transfer', () => {
+    it(
+      'should transfer tokens',
+      function(done) {
+        exec(
+          `yarn dev:assets:transfer -i ${this.assetId} -t ${RECEIVER_PARA} -a ${AMOUNT} -s ${SENDER_PARA}`, 
+          (error, stdout, stderr) => {
+            if (stdout) {
+              console.log(stdout)
+              let result = eventResultParser(stdout)
+              chai.assert.equal(result, OK)
+              done()
+            }
+        });
+    });
+  });
   
   
 

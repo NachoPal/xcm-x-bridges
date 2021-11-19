@@ -33,11 +33,6 @@ export const assets = {
 
     check(data, callback = ()=>{}) {
       let reason = data.toString()
-      // let result = data.isOk ? OK : FAIL
-
-      // if (result === FAIL) {
-      //   callback = () => { process.exit(0) }
-      // }
 
       process.stdout.write(`${OK}-${this.name}-asset_id: ${reason}\n`, () => {
         callback(); 
@@ -53,11 +48,7 @@ export const assets = {
 
     check(data, callback = ()=>{}) {
       let reason = data.toHuman()
-      // let result = data.isOk ? OK : FAIL
-
-      // if (result === FAIL) {
-      //   callback = () => { process.exit(0) }
-      // }
+      // let reason = data.toJSON()
 
       process.stdout.write(`${OK}-${this.name}-name: ${reason}\n`, () => {
         callback(); 
@@ -73,11 +64,21 @@ export const assets = {
 
     check(data, callback = ()=>{}) {
       let reason = data.toString()
-      // let result = data.isOk ? OK : FAIL
 
-      // if (result === FAIL) {
-      //   callback = () => { process.exit(0) }
-      // }
+      process.stdout.write(`${OK}-${this.name}-amount: ${reason}\n`, () => {
+        callback(); 
+      })
+    }
+  },
+  Transferred: class Event {
+    name = 'assets.Transferred'
+    lookupName = 'u128'
+    lookupIndex = 6
+
+    constructor(){}
+
+    check(data, callback = ()=>{}) {
+      let reason = data.toString()
 
       process.stdout.write(`${OK}-${this.name}-amount: ${reason}\n`, () => {
         callback(); 
